@@ -1,0 +1,15 @@
+cmake_minimum_required(VERSION 4.0)
+project(Cube3 C)
+
+set(CMAKE_C_STANDARD 11)
+
+include_directories(include)
+
+set(SRCS src/Vec3.c
+         src/Cubie.c
+         src/Cube.c
+         Cube3.h)
+
+
+add_library(${PROJECT_NAME} ${SRCS})
+
