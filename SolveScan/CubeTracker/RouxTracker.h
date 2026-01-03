@@ -5,7 +5,10 @@
 #ifndef CUBE_REPRESENTATION_ROUXTRACKER_H
 #define CUBE_REPRESENTATION_ROUXTRACKER_H
 
+#pragma once
 #include "../Cube3/Cube3.h"
+
+#include <stdlib.h>
 
 typedef enum
 {
@@ -23,8 +26,8 @@ typedef struct
 {
     RouxMilestones STEP;
     char* MOVES_APPLIED;
-    int MOVES_APPLIED_SIZE;
-    int MOVES_APPLIED_MAX;
+    size_t MOVES_APPLIED_SIZE;
+    size_t MOVES_APPLIED_MAX;
 
     Cube* CUBE;
 } RouxTracker;

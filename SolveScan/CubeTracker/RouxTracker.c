@@ -298,7 +298,7 @@ int resize_moves_applied(RouxTracker* tracker)
         return 1;
     }
 
-    const int new_size = tracker -> MOVES_APPLIED_MAX * 2;
+    const size_t new_size = tracker -> MOVES_APPLIED_MAX * 2;
     char* p = malloc(sizeof(char)* new_size);
     if (!p)
     {
