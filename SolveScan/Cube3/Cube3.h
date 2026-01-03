@@ -2,8 +2,8 @@
 #ifndef CUBE3_H
 #define CUBE3_H
 
-#include "Vec3.h"
-#include "Cubie.h"
-#include "Cube.h"
+#include "include/Vec3.h"
+#include "include/Cubie.h"
+#include "include/Cube.h"
 
 #endif

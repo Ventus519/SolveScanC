@@ -7,8 +7,7 @@ include_directories(include)
 
 set(SRCS src/Vec3.c
          src/Cubie.c
-         src/Cube.c
-         Cube3.h)
+         src/Cube.c)
 
 
 add_library(${PROJECT_NAME} ${SRCS})

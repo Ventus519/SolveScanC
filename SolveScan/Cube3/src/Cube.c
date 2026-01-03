@@ -535,7 +535,7 @@ int parse_move(char** p_MOVE_SPEC, Moves* p_MOVE, int* p_count, int* p_clockwise
         }
         *p_clockwise = 0;
     }
-    const int test = strtol(*p_MOVE_SPEC+1, &end, 10);
+    const int test = strtol(*p_MOVE_SPEC + 1, &end, 10);
     if (errno == ERANGE)
     {
         return 1;
@@ -549,6 +549,15 @@ int parse_move(char** p_MOVE_SPEC, Moves* p_MOVE, int* p_count, int* p_clockwise
         *p_count = test;
     }
 
+
+    for (int i = 1; i < strlen(*p_MOVE_SPEC); i++)
+    {
+        char* ENSURE_ONLY_ONE_MOVE = *p_MOVE_SPEC + i;
+        if (!parse_move(&ENSURE_ONLY_ONE_MOVE, p_MOVE, p_count, p_clockwise))
+        {
+            return 1;
+        }
+    }
 
     return 0;
 }
