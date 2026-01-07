@@ -17,7 +17,7 @@ typedef struct {
     size_t RECONSTRUCTION_max;
     size_t RECONSTRUCTION_size;
 
-    FILE* save_file;
+    char* save_file_path;
 } CubeTracker;
 
 CubeTracker* create_CubeTracker(char* file_path);
@@ -32,9 +32,6 @@ int update_reconstruction(CubeTracker* tracker);
 int read_reconstruction_from_file(CubeTracker* tracker);
 int write_reconstruction_to_file(CubeTracker* tracker);
 
-int update_ROUX_reconstruction(RouxTracker* tracker);
-int read_ROUX_reconstruction_from_file(RouxTracker* tracker);
-int write_ROUX_reconstruction_to_file(RouxTracker* tracker);
-
+int update_ROUX_reconstruction(RouxTracker* ROUX_TRACK);
 
 #endif //SOLVESCAN_CUBETRACKER_H

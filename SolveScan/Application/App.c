@@ -11,7 +11,7 @@ static int WINDOW_HEIGHT = 600;
 
 
 RouxTracker* tracker = NULL;
-char* MOVES_DEFAULT = "R U R' U'";
+char* MOVES_DEFAULT = "R";
 
 WidgetLayout layout;
 
@@ -22,12 +22,12 @@ static void on_button_apply_default_moves (gpointer user_data)
         g_print("SRM SOURCE FOUND\n");
         return;
     }
-    if (apply_moves(tracker, &MOVES_DEFAULT))
+    if (track_applied_move(tracker, &MOVES_DEFAULT))
     {
-        g_print("COULD NOT APPLY MOVES: R U R' U'\n");
+        g_print("COULD NOT APPLY MOVES: R\n");
         return;
     }
-    g_print("Applied moves %s\n", MOVES_DEFAULT);
+    g_print("Applied moves: %s\n", MOVES_DEFAULT);
 }
 
 static void on_button_is_solved (gpointer user_data)
@@ -62,12 +62,14 @@ static void on_button_apply_moves_from_text (gpointer user_data)
         return;
     }
     char* moves_to_apply = gtk_entry_buffer_get_text(MOVES_TO_APPLY);
-    if (apply_moves(tracker, &moves_to_apply))
+    if (track_applied_move(tracker, &moves_to_apply))
     {
-        g_print("INVALID MOVE SEQUENCE\n");
+        g_print("INVALID MOVE SEQUENCE (or it was just more than 1 move for testing)\n");
         return;
     }
-    g_print("APPLIED MOVES %s\n", moves_to_apply);
+
+
+    g_print("APPLIED MOVES: %s\n", moves_to_apply);
 
 
 

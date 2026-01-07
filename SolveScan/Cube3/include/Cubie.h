@@ -1,8 +1,7 @@
 #ifndef CUBIE_H
 #define CUBIE_H
-#include "Vec3.h"
 
-typedef enum
+typedef enum MOVES
 {
     MOVE_FRONT,
     MOVE_UP,
@@ -25,9 +24,11 @@ typedef enum
     ROT_Z,
     ROT_Y,
     ROT_X,
+
+    MOVE_NULL
 } Moves;
 
-typedef enum
+typedef enum COLORS
 {
     GREEN,
     WHITE,
@@ -38,7 +39,7 @@ typedef enum
     COLORS_NULL
 } Colors;
 
-typedef enum
+typedef enum FACES
 {
     FACE_FRONT,
     FACE_UP,
@@ -48,11 +49,26 @@ typedef enum
     FACE_LEFT
 } Faces;
 
-typedef struct
+typedef struct VEC3 {
+    int x;
+    int y;
+    int z;
+} Vec3;
+
+typedef struct CUBIE
 {
     Vec3 position;
     Colors FACE_COLORS[6];
 } Cubie;
+
+typedef struct MOVESPEC
+{
+    Moves MOVE;
+    int count;
+    int clockwise;
+} MoveSpec;
+
+
 
 Cubie* createCubie(int x, int y, int z);
 void freeCubie(Cubie* source);
@@ -68,7 +84,8 @@ int rotateZ(Cubie* source, int clockwise);
 int rotateY(Cubie* source, int clockwise);
 int rotateX(Cubie* source, int clockwise);
 
-int applyRotation(Cubie* source, Moves MOVE, int count, int clockwise);
+int applyRotation(Cubie* source, const MoveSpec* MOVE_SPEC);
+char* MoveSpec_to_str(const MoveSpec* MOVE_SPEC);
 
 int isSame(const Cubie* source, const Cubie* other);
 

@@ -5,8 +5,7 @@ set(CMAKE_C_STANDARD 11)
 
 include_directories(include)
 
-set(SRCS src/Vec3.c
-         src/Cubie.c
+set(SRCS src/Cubie.c
          src/Cube.c)
 
 

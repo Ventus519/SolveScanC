@@ -15,41 +15,24 @@ CubeTracker* create_CubeTracker(char* file_path)
     {
         return NULL;
     }
-    FILE* file = fopen(file_path, "wr");
-    if (!file)
-    {
-        return NULL;
-    }
-
     CubeTracker* tracker = malloc(sizeof(CubeTracker));
     if (!tracker)
     {
-        goto CUBETRACKER_ALLOC_FAIL;
+        goto CUBE_TRACKER_ALLOC_FAIL;
     }
-    tracker -> save_file = file;
-
     if (create_trackers(tracker))
     {
-        goto TRACKER_ALLOC_FAIL;
+        goto SUB_TRACKER_ALLOC_FAIL;
     }
-
-    tracker -> RECONSTRUCTION_max = 3;
-    char* reconstruct = malloc(sizeof(char) * tracker -> RECONSTRUCTION_max);
-    if (!reconstruct)
-    {
-        goto RECONSTRUCT_ALLOC_FAIL;
-    }
-    reconstruct[0] = '\0';
-    tracker -> RECONSTRUCTION = reconstruct;
+    tracker -> RECONSTRUCTION = "SCRAMBLE: \0"; //assumes default state is scramble
+    tracker -> RECONSTRUCTION_size = 11; //size of "SCRAMBLE: \0"
+    tracker -> RECONSTRUCTION_max = 22; //2 * (RECONSTRUCTION_size) for safety
+    tracker -> save_file_path = file_path;
 
     return tracker;
-
-    RECONSTRUCT_ALLOC_FAIL:
-        free_trackers(tracker);
-    TRACKER_ALLOC_FAIL:
-        free(tracker);
-    CUBETRACKER_ALLOC_FAIL:
-        fclose(file);
+    SUB_TRACKER_ALLOC_FAIL:
+        free_CubeTracker(tracker);
+    CUBE_TRACKER_ALLOC_FAIL:
         return NULL;
 }
 
@@ -75,7 +58,6 @@ void free_CubeTracker(CubeTracker* tracker)
         return;
     }
     free_trackers(tracker);
-    fclose(tracker -> save_file);
     free(tracker -> RECONSTRUCTION);
 
     free(tracker);
@@ -112,5 +94,39 @@ int resize_reconstruction(CubeTracker* tracker)
     memcpy(p, tracker -> RECONSTRUCTION, tracker -> RECONSTRUCTION_size);
     tracker -> RECONSTRUCTION = p;
     tracker -> RECONSTRUCTION_max = new_size;
+    return 0;
+}
+
+int update_reconstruction(CubeTracker* tracker)
+{
+    if (!tracker || !tracker -> RECONSTRUCTION)
+    {
+        return 1;
+    }
+
+    if (tracker -> tracker_ROUX != NULL)
+    {
+        return update_ROUX_reconstruction(tracker -> tracker_ROUX);
+    }
+
+    return 0;
+}
+
+int update_ROUX_reconstruction(RouxTracker* ROUX_TRACK)
+{
+    if (!ROUX_TRACK)
+    {
+        return 1;
+    }
+    //need to actually implement the updating
+    /*
+     *Current plan: make the update reconstruction methods take the move sequence as a parameter
+     *Check the milestone before the sequence and compare it as each move is applied
+     *If the move sequence results in a different milestone, then edit it at the point of concern
+     *
+     *this will likely feel very redundant since I already have an apply move sequence function in Cube.c
+     *
+     */
+
     return 0;
 }

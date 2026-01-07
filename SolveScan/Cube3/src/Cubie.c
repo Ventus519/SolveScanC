@@ -1,5 +1,4 @@
 #include "Cubie.h"
-#include "Vec3.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -164,25 +163,25 @@ int rotateX(Cubie* source, const int clockwise)
     return  cycleFaces(source, FACE_FRONT, FACE_UP, FACE_BACK, FACE_DOWN, clockwise);
 }
 
-int applyRotation(Cubie* source, const Moves MOVE, const int count, const int clockwise)
+int applyRotation(Cubie* source, const MoveSpec* MOVE_SPEC)
 {
-    if (!source)
+    if (!source || !MOVE_SPEC)
     {
         return 1;
     }
 
 
-    for (int i = 0; i < count % 4; i++)
+    for (int i = 0; i < MOVE_SPEC -> count % 4; i++)
     {
         int error_test = 0;
-        switch (MOVE)
+        switch (MOVE_SPEC -> MOVE)
         {
-            case MOVE_FRONT:  error_test += rotateZ(source, clockwise); break;
-            case MOVE_UP:  error_test += rotateY(source, clockwise); break;
-            case MOVE_RIGHT:  error_test += rotateX(source, clockwise); break;
-            case MOVE_BACK:  error_test += rotateZ(source, !clockwise); break;
-            case MOVE_DOWN:  error_test += rotateY(source, !clockwise); break;
-            case MOVE_LEFT:  error_test += rotateX(source, !clockwise); break;
+            case MOVE_FRONT:  error_test += rotateZ(source, MOVE_SPEC -> clockwise); break;
+            case MOVE_UP:  error_test += rotateY(source, MOVE_SPEC -> clockwise); break;
+            case MOVE_RIGHT:  error_test += rotateX(source, MOVE_SPEC -> clockwise); break;
+            case MOVE_BACK:  error_test += rotateZ(source, !(MOVE_SPEC -> clockwise)); break;
+            case MOVE_DOWN:  error_test += rotateY(source, !(MOVE_SPEC -> clockwise)); break;
+            case MOVE_LEFT:  error_test += rotateX(source, !(MOVE_SPEC -> clockwise)); break;
             default: return 1;
         }
         if (error_test != 0)
@@ -191,6 +190,59 @@ int applyRotation(Cubie* source, const Moves MOVE, const int count, const int cl
         }
     }
     return 0;
+}
+
+char* MoveSpec_to_str(const MoveSpec* MOVE_SPEC)
+{
+    if (!MOVE_SPEC)
+    {
+        return NULL;
+    }
+    int result_size = 3;
+    if (!MOVE_SPEC -> clockwise)
+    {
+        result_size = 4;
+    }
+
+    char* result = malloc(sizeof(char) * result_size);
+    switch (MOVE_SPEC -> MOVE)
+    {
+        case MOVE_FRONT: result[0] = 'F'; break;
+        case MOVE_UP: result[0] = 'U'; break;
+        case MOVE_RIGHT: result[0] = 'R'; break;
+        case MOVE_BACK: result[0] = 'B'; break;
+        case MOVE_DOWN: result[0] = 'D'; break;
+        case MOVE_LEFT: result[0] = 'L'; break;
+
+        case WIDE_FRONT: result[0] = 'f'; break;
+        case WIDE_UP: result[0] = 'u'; break;
+        case WIDE_RIGHT: result[0] = 'r'; break;
+        case WIDE_BACK: result[0] = 'b'; break;
+        case WIDE_DOWN: result[0] = 'd'; break;
+        case WIDE_LEFT: result[0] = 'l'; break;
+
+        case SLICE_SIDE: result[0] = 'S'; break;
+        case SLICE_EQUATOR: result[0] = 'E'; break;
+        case SLICE_MIDDLE: result[0] = 'M'; break;
+
+        case ROT_Z: result[0] = 'z'; break;
+        case ROT_Y: result[0] = 'y'; break;
+        case ROT_X: result[0] = 'x'; break;
+
+        default: return NULL;
+    }
+
+    if (!MOVE_SPEC -> clockwise)
+    {
+        result[1] = '\'';
+        result[2] = ' ';
+        result[3] = '\0';
+        return result;
+    }
+
+    result[1] = ' ';
+    result[2] = '\0';
+    return result;
 }
 
 int isSame(const Cubie* source, const Cubie* other)

@@ -10,7 +10,7 @@
 #include "../CubeTracker/RouxTracker.h"
 #include "gtk/gtk.h"
 
-typedef struct {
+typedef struct WIDGET_MAP{
     GtkWidget* button_apply_default_moves;
     GtkWidget* button_apply_moves_from_text;
     GtkWidget* button_is_solved;

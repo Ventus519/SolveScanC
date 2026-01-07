@@ -8,7 +8,7 @@ typedef struct CUBE {
     Cubie* GRAND_CUBE[3][3][3];
 }Cube;
 
-typedef enum {
+typedef enum AXIS{
     AXIS_Z,
     AXIS_Y,
     AXIS_X,
@@ -33,14 +33,14 @@ int slice_e(Cube* source, int count, int clockwise);
 int slice_m(Cube* source, int count, int clockwise);
 
 int rotate_about_axis(Cube* source, Axis AXIS_OF_ROTATION, int count, int clockwise);
-int apply_move(Cube* source, Moves MOVE, int count, int clockwise);
+int apply_move_from_spec(Cube* source, MoveSpec* MOVE_SPEC);
 
 int sync_cubie_positions(Cube* source);
 
 int is_solved(const Cube* source);
 
-int parse_move(char** p_MOVE_SPEC, Moves* p_MOVE, int* p_count, int* p_clockwise);
-int apply_move_sequence(Cube* source, char** p_MOVE_SEQ);
+int parse_move(char** p_MOVE_SPEC, MoveSpec* MOVE_SPEC_DEST);
+int apply_move_from_formatted_str(Cube* source, char** p_MOVE_SPEC);
 
 void print_cube(const Cube* source);
 

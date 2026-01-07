@@ -272,7 +272,7 @@ int apply_moves(RouxTracker* tracker, char** SEQUENCE)
 
     const size_t SEQUENCE_SIZE = strlen(*SEQUENCE);
     //MOVES_APPLIED_SIZE is the number of bytes used, MOVES_APPLIED_MAX is the max amount of bytes
-    while (tracker -> MOVES_APPLIED_SIZE + SEQUENCE_SIZE> tracker -> MOVES_APPLIED_MAX)
+    while (tracker -> MOVES_APPLIED_SIZE + SEQUENCE_SIZE > tracker -> MOVES_APPLIED_MAX)
     {
         if (resize_moves_applied(tracker))
         {
@@ -280,13 +280,47 @@ int apply_moves(RouxTracker* tracker, char** SEQUENCE)
         }
     }
 
-    if (apply_move_sequence(tracker -> CUBE, SEQUENCE))
+    if (apply_move_from_formatted_str(tracker -> CUBE, SEQUENCE))
     {
         return 1;
     }
 
     memcpy(tracker -> MOVES_APPLIED + tracker -> MOVES_APPLIED_SIZE - 1, *SEQUENCE, SEQUENCE_SIZE + 1);
     tracker -> MOVES_APPLIED_SIZE += (int)SEQUENCE_SIZE;
+
+    return 0;
+}
+
+int track_applied_move(RouxTracker* tracker, char** FORMATTED_MOVE)
+{
+    if (!tracker || !FORMATTED_MOVE || !(*FORMATTED_MOVE) || !(tracker -> MOVES_APPLIED))
+    {
+        return 1;
+    }
+
+    if (normalize_moves_applied(tracker))
+    {
+        return 1;
+    }
+
+    if (apply_move_from_formatted_str(tracker -> CUBE, FORMATTED_MOVE))
+    {
+        return 1;
+    }
+
+    const size_t FORMATTED_MOVE_SIZE = strlen(*FORMATTED_MOVE);
+    while (tracker -> MOVES_APPLIED_SIZE + FORMATTED_MOVE_SIZE > tracker -> MOVES_APPLIED_MAX)
+    {
+        if (resize_moves_applied(tracker))
+        {
+            return 1;
+        }
+    }
+
+    memcpy(tracker -> MOVES_APPLIED + tracker -> MOVES_APPLIED_SIZE - 1, *FORMATTED_MOVE, FORMATTED_MOVE_SIZE + 1);
+    tracker -> MOVES_APPLIED_SIZE += (int)FORMATTED_MOVE_SIZE;
+
+    //step has to be updated manually after calling since there is no guarantee that the move is not a part of scramble/inspection
 
     return 0;
 }

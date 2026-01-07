@@ -131,12 +131,18 @@ int move_f(Cube* source, const int count, const int clockwise)
         return 1;
     }
 
+    MoveSpec FRONT_SPEC;
+    FRONT_SPEC.MOVE = MOVE_FRONT;
+    FRONT_SPEC.count = count;
+    FRONT_SPEC.clockwise = clockwise;
+
+
     for (int x = -1; x < 2; x++)
     {
         for (int y = -1; y < 2; y++)
         {
             Cubie* modifying = get_cubie_at_position(source, x, y, 1);
-            if (!modifying || applyRotation(modifying, MOVE_FRONT, count, clockwise))
+            if (!modifying || applyRotation(modifying, &FRONT_SPEC))
             {
                 return 1;
             }
@@ -153,12 +159,17 @@ int move_u(Cube* source, const int count, const int clockwise)
         return 1;
     }
 
+    MoveSpec UP_SPEC;
+    UP_SPEC.MOVE = MOVE_UP;
+    UP_SPEC.count = count;
+    UP_SPEC.clockwise = clockwise;
+
     for (int x = -1; x < 2; x++)
     {
         for (int z = -1; z < 2; z++)
         {
             Cubie* modifying = get_cubie_at_position(source, x, 1, z);
-            if (!modifying || applyRotation(modifying, MOVE_UP, count, clockwise))
+            if (!modifying || applyRotation(modifying, &UP_SPEC))
             {
                 return 1;
             }
@@ -173,12 +184,18 @@ int move_r(Cube* source, const int count, const int clockwise)
     {
         return 1;
     }
+
+    MoveSpec RIGHT_SPEC;
+    RIGHT_SPEC.MOVE = MOVE_RIGHT;
+    RIGHT_SPEC.count = count;
+    RIGHT_SPEC.clockwise = clockwise;
+
     for (int y = -1; y < 2; y++)
     {
         for (int z = -1; z < 2; z++)
         {
             Cubie* modifying = get_cubie_at_position(source, 1, y, z);
-            if (!modifying || applyRotation(modifying, MOVE_RIGHT, count, clockwise))
+            if (!modifying || applyRotation(modifying, &RIGHT_SPEC))
             {
                 return 1;
             }
@@ -193,12 +210,18 @@ int move_b(Cube* source, const int count, const int clockwise)
     {
         return 1;
     }
+
+    MoveSpec BACK_SPEC;
+    BACK_SPEC.MOVE = MOVE_BACK;
+    BACK_SPEC.count = count;
+    BACK_SPEC.clockwise = clockwise;
+
     for (int x = -1; x < 2; x++)
     {
         for (int y = -1; y < 2; y++)
         {
             Cubie* modifying = get_cubie_at_position(source, x, y, -1);
-            if (!modifying || applyRotation(modifying, MOVE_BACK, count, clockwise))
+            if (!modifying || applyRotation(modifying, &BACK_SPEC))
             {
                 return 1;
             }
@@ -213,12 +236,18 @@ int move_d(Cube* source, const int count, const int clockwise)
     {
         return 1;
     }
+
+    MoveSpec DOWN_SPEC;
+    DOWN_SPEC.MOVE = MOVE_DOWN;
+    DOWN_SPEC.count = count;
+    DOWN_SPEC.clockwise = clockwise;
+
     for (int x = -1; x < 2; x++)
     {
         for (int z = -1; z < 2; z++)
         {
             Cubie* modifying = get_cubie_at_position(source, x, -1, z);
-            if (!modifying || applyRotation(modifying, MOVE_DOWN, count, clockwise))
+            if (!modifying || applyRotation(modifying, &DOWN_SPEC))
             {
                 return 1;
             }
@@ -233,12 +262,18 @@ int move_l(Cube* source, const int count, const int clockwise)
     {
         return 1;
     }
+
+    MoveSpec LEFT_SPEC;
+    LEFT_SPEC.MOVE = MOVE_LEFT;
+    LEFT_SPEC.count = count;
+    LEFT_SPEC.clockwise = clockwise;
+
     for (int y = -1; y < 2; y++)
     {
         for (int z = -1; z < 2; z++)
         {
             Cubie* modifying = get_cubie_at_position(source, -1, y, z);
-            if (!modifying || applyRotation(modifying, MOVE_LEFT, count, clockwise))
+            if (!modifying || applyRotation(modifying, &LEFT_SPEC))
             {
                 return 1;
             }
@@ -253,12 +288,18 @@ int slice_s(Cube* source, const int count, const int clockwise)
     {
         return 1;
     }
+
+    MoveSpec S_SLICE_SPEC;
+    S_SLICE_SPEC.MOVE = SLICE_SIDE;
+    S_SLICE_SPEC.count = count;
+    S_SLICE_SPEC.clockwise = clockwise;
+
     for (int x = -1; x < 2; x++)
     {
         for (int y = -1; y < 2; y++)
         {
             Cubie* modifying = get_cubie_at_position(source, x, y, 0);
-            if (!modifying || applyRotation(modifying, MOVE_FRONT, count, clockwise))
+            if (!modifying || applyRotation(modifying, &S_SLICE_SPEC))
             {
                 return 1;
             }
@@ -273,12 +314,18 @@ int slice_e(Cube* source, const int count, const int clockwise)
     {
         return 1;
     }
+
+    MoveSpec E_SLICE_SPEC;
+    E_SLICE_SPEC.MOVE = SLICE_EQUATOR;
+    E_SLICE_SPEC.count = count;
+    E_SLICE_SPEC.clockwise = clockwise;
+
     for (int x = -1; x < 2; x++)
     {
         for (int z = -1; z < 2; z++)
         {
             Cubie* modifying = get_cubie_at_position(source, x, 0, z);
-            if (!modifying || applyRotation(modifying, MOVE_DOWN, count, clockwise))
+            if (!modifying || applyRotation(modifying, &E_SLICE_SPEC))
             {
                 return 1;
             }
@@ -293,12 +340,18 @@ int slice_m(Cube* source, const int count, const int clockwise)
     {
         return 1;
     }
+
+    MoveSpec M_SLICE_SPEC;
+    M_SLICE_SPEC.MOVE = SLICE_MIDDLE;
+    M_SLICE_SPEC.count = count;
+    M_SLICE_SPEC.clockwise = clockwise;
+
     for (int y = -1; y < 2; y++)
     {
         for (int z = -1; z < 2; z++)
         {
             Cubie* modifying = get_cubie_at_position(source, 0, y, z);
-            if (!modifying || applyRotation(modifying, MOVE_LEFT, count, clockwise))
+            if (!modifying || applyRotation(modifying, &M_SLICE_SPEC))
             {
                 return 1;
             }
@@ -313,12 +366,15 @@ int rotate_about_axis(Cube* source, const Axis AXIS_OF_ROTATION, const int count
     {
         return 1;
     }
-    Moves MOVE_APPLIED;
+    MoveSpec MOVE_APPLIED_SPEC;
+    MOVE_APPLIED_SPEC.count = count;
+    MOVE_APPLIED_SPEC.clockwise = clockwise;
+
     switch (AXIS_OF_ROTATION)
     {
-        case AXIS_Z: MOVE_APPLIED = MOVE_FRONT; break;
-        case AXIS_Y: MOVE_APPLIED = MOVE_UP; break;
-        case AXIS_X: MOVE_APPLIED = MOVE_RIGHT; break;
+        case AXIS_Z: MOVE_APPLIED_SPEC.MOVE = MOVE_FRONT; break;
+        case AXIS_Y: MOVE_APPLIED_SPEC.MOVE = MOVE_UP; break;
+        case AXIS_X: MOVE_APPLIED_SPEC.MOVE = MOVE_RIGHT; break;
         default: return 1;
     }
     for (int x = -1; x < 2; x++)
@@ -328,7 +384,7 @@ int rotate_about_axis(Cube* source, const Axis AXIS_OF_ROTATION, const int count
             for (int z = -1; z < 2; z++)
             {
                 Cubie* modifying = get_cubie_at_position(source, x, y, z);
-                if (!modifying || applyRotation(modifying, MOVE_APPLIED, count, clockwise))
+                if (!modifying || applyRotation(modifying, &MOVE_APPLIED_SPEC))
                 {
                     return 1;
                 }
@@ -338,37 +394,39 @@ int rotate_about_axis(Cube* source, const Axis AXIS_OF_ROTATION, const int count
     return sync_cubie_positions(source);
 }
 
-int apply_move(Cube* source, const Moves MOVE, const int count, const int clockwise)
+int apply_move_from_spec(Cube* source, MoveSpec* MOVE_SPEC)
 {
-    if (!source)
+    if (!source || !MOVE_SPEC)
     {
         return 1;
     }
-    switch (MOVE)
+    switch (MOVE_SPEC -> MOVE)
     {
-        case MOVE_FRONT: return move_f(source, count, clockwise);
-        case MOVE_UP: return move_u(source, count, clockwise);
-        case MOVE_RIGHT: return move_r(source, count, clockwise);
-        case MOVE_BACK: return move_b(source, count, clockwise);
-        case MOVE_DOWN: return move_d(source, count, clockwise);
-        case MOVE_LEFT: return move_l(source, count, clockwise);
+        case MOVE_FRONT: return move_f(source, MOVE_SPEC -> count, MOVE_SPEC -> clockwise);
+        case MOVE_UP: return move_u(source, MOVE_SPEC -> count, MOVE_SPEC -> clockwise);
+        case MOVE_RIGHT: return move_r(source, MOVE_SPEC -> count, MOVE_SPEC -> clockwise);
+        case MOVE_BACK: return move_b(source, MOVE_SPEC -> count, MOVE_SPEC -> clockwise);
+        case MOVE_DOWN: return move_d(source, MOVE_SPEC -> count, MOVE_SPEC -> clockwise);
+        case MOVE_LEFT: return move_l(source, MOVE_SPEC -> count, MOVE_SPEC -> clockwise);
 
-        case SLICE_SIDE: return slice_s(source, count, clockwise);
-        case SLICE_EQUATOR: return slice_e(source, count, clockwise);
-        case SLICE_MIDDLE: return slice_m(source, count, clockwise);
+        case SLICE_SIDE: return slice_s(source, MOVE_SPEC -> count, MOVE_SPEC -> clockwise);
+        case SLICE_EQUATOR: return slice_e(source, MOVE_SPEC -> count, MOVE_SPEC -> clockwise);
+        case SLICE_MIDDLE: return slice_m(source, MOVE_SPEC -> count, MOVE_SPEC -> clockwise);
 
-        case WIDE_FRONT: return (move_f(source, count, clockwise) || slice_s(source, count, clockwise));
-        case WIDE_UP: return (move_u(source, count, clockwise) || slice_e(source, count, !clockwise));
-        case WIDE_RIGHT: return (move_r(source, count, clockwise) || slice_m(source, count, !clockwise));
-        case WIDE_BACK: return (move_b(source, count, clockwise) || slice_s(source, count, !clockwise));
-        case WIDE_DOWN: return (move_d(source, count, clockwise) || slice_e(source, count, clockwise));
-        case WIDE_LEFT: return (move_l(source, count, clockwise) || slice_m(source, count, clockwise));
+        case WIDE_FRONT: return (move_f(source, MOVE_SPEC -> count, MOVE_SPEC -> clockwise) || slice_s(source, MOVE_SPEC -> count, MOVE_SPEC -> clockwise));
+        case WIDE_UP: return (move_u(source, MOVE_SPEC -> count, MOVE_SPEC -> clockwise) || slice_e(source, MOVE_SPEC -> count, !MOVE_SPEC -> clockwise));
+        case WIDE_RIGHT: return (move_r(source, MOVE_SPEC -> count, MOVE_SPEC -> clockwise) || slice_m(source, MOVE_SPEC -> count, !MOVE_SPEC -> clockwise));
+        case WIDE_BACK: return (move_b(source, MOVE_SPEC -> count, MOVE_SPEC -> clockwise) || slice_s(source, MOVE_SPEC -> count, !MOVE_SPEC -> clockwise));
+        case WIDE_DOWN: return (move_d(source, MOVE_SPEC -> count, MOVE_SPEC -> clockwise) || slice_e(source, MOVE_SPEC -> count, MOVE_SPEC -> clockwise));
+        case WIDE_LEFT: return (move_l(source, MOVE_SPEC -> count, MOVE_SPEC -> clockwise) || slice_m(source, MOVE_SPEC -> count, MOVE_SPEC -> clockwise));
 
-        case ROT_Z: return rotate_about_axis(source, AXIS_Z, count, clockwise);
-        case ROT_Y: return rotate_about_axis(source, AXIS_Y, count, clockwise);
-        case ROT_X: return rotate_about_axis(source, AXIS_X, count, clockwise);
+        case ROT_Z: return rotate_about_axis(source, AXIS_Z, MOVE_SPEC -> count, MOVE_SPEC -> clockwise);
+        case ROT_Y: return rotate_about_axis(source, AXIS_Y, MOVE_SPEC -> count, MOVE_SPEC -> clockwise);
+        case ROT_X: return rotate_about_axis(source, AXIS_X, MOVE_SPEC -> count, MOVE_SPEC -> clockwise);
 
-        default: return 1;
+        case MOVE_NULL: return 0; //the move is still valid
+
+        default: return 1; //if somehow an invalid move is provided
     }
 }
 
@@ -482,9 +540,9 @@ int is_solved(const Cube* source)
     return 1;
 }
 
-int parse_move(char** p_MOVE_SPEC, Moves* p_MOVE, int* p_count, int* p_clockwise)
+int parse_move(char** p_MOVE_SPEC, MoveSpec* MOVE_SPEC_DEST)
 {
-    if (!p_MOVE_SPEC || !p_MOVE || !p_count || !p_clockwise )
+    if (!p_MOVE_SPEC || !MOVE_SPEC_DEST)
     {
         return 1;
     }
@@ -492,27 +550,27 @@ int parse_move(char** p_MOVE_SPEC, Moves* p_MOVE, int* p_count, int* p_clockwise
 
     switch (*p_MOVE_SPEC[0])
     {
-        case 'F': *p_MOVE = MOVE_FRONT; break;
-        case 'U': *p_MOVE = MOVE_UP; break;
-        case 'R': *p_MOVE = MOVE_RIGHT; break;
-        case 'B': *p_MOVE = MOVE_BACK; break;
-        case 'D': *p_MOVE = MOVE_DOWN; break;
-        case 'L': *p_MOVE = MOVE_LEFT; break;
+        case 'F': MOVE_SPEC_DEST -> MOVE = MOVE_FRONT; break;
+        case 'U': MOVE_SPEC_DEST -> MOVE = MOVE_UP; break;
+        case 'R': MOVE_SPEC_DEST -> MOVE = MOVE_RIGHT; break;
+        case 'B': MOVE_SPEC_DEST -> MOVE = MOVE_BACK; break;
+        case 'D': MOVE_SPEC_DEST -> MOVE = MOVE_DOWN; break;
+        case 'L': MOVE_SPEC_DEST -> MOVE = MOVE_LEFT; break;
 
-        case 'f': *p_MOVE = WIDE_FRONT; break;
-        case 'u': *p_MOVE = WIDE_UP; break;
-        case 'r': *p_MOVE = WIDE_RIGHT; break;
-        case 'b': *p_MOVE = WIDE_BACK; break;
-        case 'd': *p_MOVE = WIDE_DOWN; break;
-        case 'l': *p_MOVE = WIDE_LEFT; break;
+        case 'f': MOVE_SPEC_DEST -> MOVE = WIDE_FRONT; break;
+        case 'u': MOVE_SPEC_DEST -> MOVE = WIDE_UP; break;
+        case 'r': MOVE_SPEC_DEST -> MOVE = WIDE_RIGHT; break;
+        case 'b': MOVE_SPEC_DEST -> MOVE = WIDE_BACK; break;
+        case 'd': MOVE_SPEC_DEST -> MOVE = WIDE_DOWN; break;
+        case 'l': MOVE_SPEC_DEST -> MOVE = WIDE_LEFT; break;
 
-        case 'S': *p_MOVE = SLICE_SIDE; break;
-        case 'E': *p_MOVE = SLICE_EQUATOR; break;
-        case 'M': *p_MOVE = SLICE_MIDDLE; break;
+        case 'S': MOVE_SPEC_DEST -> MOVE = SLICE_SIDE; break;
+        case 'E': MOVE_SPEC_DEST -> MOVE = SLICE_EQUATOR; break;
+        case 'M': MOVE_SPEC_DEST -> MOVE = SLICE_MIDDLE; break;
 
-        case 'z': *p_MOVE = ROT_Z; break;
-        case 'y': *p_MOVE = ROT_Y; break;
-        case 'x': *p_MOVE = ROT_X; break;
+        case 'z': MOVE_SPEC_DEST -> MOVE = ROT_Z; break;
+        case 'y': MOVE_SPEC_DEST -> MOVE = ROT_Y; break;
+        case 'x': MOVE_SPEC_DEST -> MOVE = ROT_X; break;
 
         default: return 1;
     }
@@ -525,7 +583,7 @@ int parse_move(char** p_MOVE_SPEC, Moves* p_MOVE, int* p_count, int* p_clockwise
 
     if (p_prime == NULL)
     {
-        *p_clockwise = 1;
+        MOVE_SPEC_DEST -> clockwise = 1;
     }
     else
     {
@@ -533,7 +591,7 @@ int parse_move(char** p_MOVE_SPEC, Moves* p_MOVE, int* p_count, int* p_clockwise
         {
             return 1;
         }
-        *p_clockwise = 0;
+        MOVE_SPEC_DEST -> clockwise = 0;
     }
     const int test = strtol(*p_MOVE_SPEC + 1, &end, 10);
     if (errno == ERANGE)
@@ -542,18 +600,18 @@ int parse_move(char** p_MOVE_SPEC, Moves* p_MOVE, int* p_count, int* p_clockwise
     }
     if (test == 0)
     {
-        *p_count = 1;
+        MOVE_SPEC_DEST -> count = 1;
     }
     else
     {
-        *p_count = test;
+        MOVE_SPEC_DEST -> count = test;
     }
 
 
     for (int i = 1; i < strlen(*p_MOVE_SPEC); i++)
     {
         char* ENSURE_ONLY_ONE_MOVE = *p_MOVE_SPEC + i;
-        if (!parse_move(&ENSURE_ONLY_ONE_MOVE, p_MOVE, p_count, p_clockwise))
+        if (!parse_move(&ENSURE_ONLY_ONE_MOVE, MOVE_SPEC_DEST))
         {
             return 1;
         }
@@ -562,81 +620,23 @@ int parse_move(char** p_MOVE_SPEC, Moves* p_MOVE, int* p_count, int* p_clockwise
     return 0;
 }
 
-int apply_move_sequence(Cube* source, char** p_MOVE_SEQ)
+
+int apply_move_from_formatted_str(Cube* source, char** p_MOVE_SPEC)
 {
-    if (!p_MOVE_SEQ)
-    {
-        return 1;
-    }
-    if (!source)
-    {
-        return 1;
-    }
-    if (strlen(*p_MOVE_SEQ) == 0)
-    {
-        return 0;
-    }
-    char* NORMALIZED_SEQ = malloc(sizeof(char)* (strlen(*p_MOVE_SEQ) + 1));
-    if (!NORMALIZED_SEQ)
+    if (!source || !p_MOVE_SPEC)
     {
         return 1;
     }
 
-    NORMALIZED_SEQ[0] = '\0';
-    strcat(NORMALIZED_SEQ, *p_MOVE_SEQ);
-
-    if (NORMALIZED_SEQ[strlen(NORMALIZED_SEQ) - 1] != ' ')
+    MoveSpec MOVE;
+    if (parse_move(p_MOVE_SPEC, &MOVE))
     {
-        char* p = malloc(sizeof(char)* strlen(NORMALIZED_SEQ) + 2);
-        if (!p)
-        {
-            goto NORMALZED_SEQ_FAIL;
-        }
-        memcpy(p, NORMALIZED_SEQ, strlen(NORMALIZED_SEQ));
-        p[strlen(NORMALIZED_SEQ)] = '\0';
-        free(NORMALIZED_SEQ);
-        NORMALIZED_SEQ = p;
-        strcat(NORMALIZED_SEQ, " ");
-    }
-    int begin_move_index = 0;
-    int end_move_index = 0;
-
-    const size_t len = strlen(NORMALIZED_SEQ);
-    for (int i = 0; i < len; i++)
-    {
-        if (NORMALIZED_SEQ[i] == ' ')
-        {
-            end_move_index = i;
-            Moves MOVE;
-            int count;
-            int clockwise;
-
-            char saved = NORMALIZED_SEQ[end_move_index];
-            char* MOVE_SPEC = NORMALIZED_SEQ + begin_move_index;
-            NORMALIZED_SEQ[end_move_index] = '\0';
-            int errors = parse_move(&MOVE_SPEC, &MOVE, &count, &clockwise);
-            if (errors)
-            {
-                goto MOVE_SPEC_FAIL;
-            }
-
-            errors = apply_move(source, MOVE, count, clockwise);
-            if (errors)
-            {
-                goto MOVE_SPEC_FAIL;
-            }
-            NORMALIZED_SEQ[end_move_index] = saved;
-            begin_move_index = end_move_index + 1;
-        }
+        return 1;
     }
 
-    free(NORMALIZED_SEQ);
+    apply_move_from_spec(source, &MOVE);
+
     return 0;
-
-    MOVE_SPEC_FAIL:
-    NORMALZED_SEQ_FAIL:
-        free(NORMALIZED_SEQ);
-        return 1;
 }
 
 void print_cube(const Cube* source)
