@@ -634,9 +634,7 @@ int apply_move_from_formatted_str(Cube* source, char** p_MOVE_SPEC)
         return 1;
     }
 
-    apply_move_from_spec(source, &MOVE);
-
-    return 0;
+    return apply_move_from_spec(source, &MOVE);;
 }
 
 void print_cube(const Cube* source)

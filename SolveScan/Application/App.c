@@ -28,6 +28,7 @@ static void on_button_apply_default_moves (gpointer user_data)
         return;
     }
     g_print("Applied moves: %s\n", MOVES_DEFAULT);
+    g_print("Current reconstruction: %s\n", MoveStack_to_str(tracker -> APPLIED));
 }
 
 static void on_button_is_solved (gpointer user_data)
@@ -70,6 +71,7 @@ static void on_button_apply_moves_from_text (gpointer user_data)
 
 
     g_print("APPLIED MOVES: %s\n", moves_to_apply);
+    g_print("Current reconstruction: %s\n", MoveStack_to_str(tracker -> APPLIED));
 
 
 

@@ -31,9 +31,6 @@ typedef struct MOVE_STACK {
 typedef struct RouxTracker
 {
     RouxMilestones STEP;
-    char* MOVES_APPLIED;
-    size_t MOVES_APPLIED_SIZE;
-    size_t MOVES_APPLIED_MAX;
 
     MoveStack* APPLIED;
 
@@ -46,9 +43,10 @@ Cube* get_cube(const RouxTracker* tracker);
 
 MoveStack* create_MoveStack();
 void free_MoveStack(MoveStack* stack);
-int push_move_to_MoveStack(MoveStack* stack, MoveSpec* move);
+int push_move_to_MoveStack(MoveStack* stack, MoveSpec* MOVE);
 int resize_MoveStack(MoveStack* stack);
-MoveSpec* pop_move_from_MoveStack(MoveStack* stack);
+MoveSpec pop_move_from_MoveStack(MoveStack* stack);
+char* MoveStack_to_str(MoveStack* stack);
 
 int is_block_complete(const RouxTracker* tracker, Faces FACE_LEFT_OR_FACE_RIGHT);
 
@@ -58,7 +56,7 @@ int is_second_block_complete(const RouxTracker* tracker);
 int last_layer_corners_aligned(const RouxTracker* tracker);
 
 int update_current_step(RouxTracker* tracker, int continue_scramble, int continue_inspect);
-int apply_moves(RouxTracker* tracker, char** SEQUENCE);
+//int apply_moves(RouxTracker* tracker, char** SEQUENCE);
 int track_applied_move(RouxTracker* tracker, char** FORMATTED_MOVE);
 
 int backtrack_moves(RouxTracker* tracker, int amount_backtracked);

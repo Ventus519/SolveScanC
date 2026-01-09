@@ -25,24 +25,19 @@ RouxTracker* create_RouxTracker()
     }
 
     tracker -> CUBE = TEST;
-    tracker -> MOVES_APPLIED_MAX = 3;
 
-    char* MOVES_APPLIED_DEST = malloc(sizeof(char) * tracker -> MOVES_APPLIED_MAX);
-    if (!MOVES_APPLIED_DEST)
-    {
-        goto MOVES_APPLIED_MALLOC_FAIL;
-    }
-    MOVES_APPLIED_DEST[0] = '\0';
-
-    tracker -> MOVES_APPLIED = MOVES_APPLIED_DEST;
-
-    tracker -> MOVES_APPLIED_SIZE = 1;
 
     tracker -> STEP = SCRAMBLE;
 
-    return tracker;
+    MoveStack* stack = create_MoveStack();
+    if (!stack)
+    {
+        goto STACK_FAIL;;
+    }
+    tracker -> APPLIED = stack;
 
-    MOVES_APPLIED_MALLOC_FAIL:
+    return tracker;
+    STACK_FAIL:
         free(tracker -> CUBE);
     CUBE_MALLOC_FAIL:
         free(tracker);
@@ -56,8 +51,8 @@ void free_RouxTracker(RouxTracker* tracker)
     {
         return;
     }
-    free(tracker -> MOVES_APPLIED);
     free(tracker -> CUBE);
+    free_MoveStack(tracker -> APPLIED);
     free(tracker);
 }
 
@@ -68,6 +63,172 @@ Cube* get_cube(const RouxTracker* tracker)
         return NULL;
     }
     return tracker -> CUBE;
+}
+
+MoveStack* create_MoveStack()
+{
+    MoveStack* stack = malloc(sizeof(MoveStack));
+    if (!stack)
+    {
+        return NULL;
+    }
+    stack -> MOVE_SEQUENCE_MAX = 4; //assume the stack will store a common trigger move
+    stack -> MOVE_SEQUENCE_LENGTH = 0; //no moves have been added to the stack
+    MoveSpec* sequence = malloc(sizeof(MoveSpec) * (stack -> MOVE_SEQUENCE_MAX));
+    if (!sequence)
+    {
+        free(stack);
+        return NULL;
+    }
+    stack -> MOVE_SEQUENCE = sequence;
+    const MoveSpec DEFAULT_MOVES = {MOVE_NULL, 0, 1};
+    for (int i = 0; i < stack -> MOVE_SEQUENCE_MAX; i++)
+    {
+        sequence[i] = DEFAULT_MOVES;
+    }
+    return stack;
+}
+
+void free_MoveStack(MoveStack* stack)
+{
+    if (!stack)
+    {
+        return;
+    }
+    free(stack -> MOVE_SEQUENCE);
+    free(stack);
+}
+
+int push_move_to_MoveStack(MoveStack* stack, MoveSpec* MOVE)
+{
+    if (!stack || !MOVE || !(stack -> MOVE_SEQUENCE))
+    {
+        return 1;
+    }
+    if (stack -> MOVE_SEQUENCE_LENGTH + 1 >= stack -> MOVE_SEQUENCE_MAX)
+    {
+        if (resize_MoveStack(stack))
+        {
+            return 1;
+        }
+    }
+    stack -> MOVE_SEQUENCE[stack -> MOVE_SEQUENCE_LENGTH] = *MOVE;
+    stack -> MOVE_SEQUENCE_LENGTH++;
+    return 0;
+}
+
+int resize_MoveStack(MoveStack* stack)
+{
+    if (!stack || !(stack -> MOVE_SEQUENCE))
+    {
+        return 1;
+    }
+    MoveSpec* new_stack = malloc(sizeof(MoveSpec) * (stack -> MOVE_SEQUENCE_MAX * 2));
+    if (!new_stack)
+    {
+        return 1;
+    }
+    stack -> MOVE_SEQUENCE_MAX *= 2;
+    for (size_t i = 0;  i < stack -> MOVE_SEQUENCE_LENGTH; i++)
+    {
+        new_stack[i] = stack -> MOVE_SEQUENCE[i];
+    }
+    free(stack -> MOVE_SEQUENCE);
+    stack -> MOVE_SEQUENCE = new_stack;
+    return 0;
+}
+
+MoveSpec pop_move_from_MoveStack(MoveStack* stack)
+{
+    const MoveSpec DEFAULT_MOVES = {MOVE_NULL, 0, 1};
+    if (!stack || !(stack -> MOVE_SEQUENCE))
+    {
+        return DEFAULT_MOVES;
+    }
+    if (stack -> MOVE_SEQUENCE_LENGTH == 0)
+    {
+        return DEFAULT_MOVES;
+    }
+    stack -> MOVE_SEQUENCE_LENGTH--;
+    const MoveSpec popped = (stack -> MOVE_SEQUENCE[stack -> MOVE_SEQUENCE_LENGTH]);
+    return popped;
+}
+
+char* MoveStack_to_str(MoveStack* stack)
+{
+    if (!stack || !(stack -> MOVE_SEQUENCE))
+    {
+        return NULL;
+    }
+    char* result_str = malloc(sizeof(char) * (stack -> MOVE_SEQUENCE_LENGTH * 3 + 1));
+    result_str[0] = '\0';
+    for (size_t i = 0;  i < stack -> MOVE_SEQUENCE_LENGTH; i++)
+    {
+        MoveSpec* MOVE_SPEC = &(stack -> MOVE_SEQUENCE[i]);
+        const int move_full_cycle = MOVE_SPEC -> count >= 4;
+        if (MOVE_SPEC -> count == 0)
+        {
+            continue;
+        }
+        MOVE_SPEC -> count %= 4;
+        switch (MOVE_SPEC -> MOVE)
+        {
+            case MOVE_FRONT: strcat(result_str, "F"); break;
+            case MOVE_UP: strcat(result_str, "U"); break;
+            case MOVE_RIGHT: strcat(result_str,"R"); break;
+            case MOVE_BACK: strcat(result_str,"B"); break;
+            case MOVE_DOWN: strcat(result_str,"D"); break;
+            case MOVE_LEFT: strcat(result_str,"L"); break;
+
+            case WIDE_FRONT: strcat(result_str, "f"); break;
+            case WIDE_UP: strcat(result_str, "u"); break;
+            case WIDE_RIGHT: strcat(result_str, "r"); break;
+            case WIDE_BACK: strcat(result_str, "b"); break;
+            case WIDE_DOWN: strcat(result_str, "d"); break;
+            case WIDE_LEFT: strcat(result_str, "l"); break;
+
+            case SLICE_SIDE: strcat(result_str, "S"); break;
+            case SLICE_EQUATOR: strcat(result_str, "E"); break;
+            case SLICE_MIDDLE: strcat(result_str, "M"); break;
+
+            case ROT_Z: strcat(result_str, "z"); break;
+            case ROT_Y: strcat(result_str, "y"); break;
+            case ROT_X: strcat(result_str, "x"); break;
+
+            case MOVE_NULL: continue;
+            default: free(result_str); return NULL;
+        }
+        if (move_full_cycle)
+        {
+            switch (MOVE_SPEC -> count)
+            {
+                case 0: strcat(result_str, "4"); break;
+                case 1: strcat(result_str, "5"); break;
+                case 2: strcat(result_str, "6"); break;
+                case 3: strcat(result_str, "7"); break;
+                default: free(result_str); return NULL;
+            }
+        }
+        else
+        {
+            switch (MOVE_SPEC -> count)
+            {
+                case 1: break;
+                case 2: strcat(result_str, "2"); break;
+                case 3: strcat(result_str, "3"); break;
+                default: free(result_str); return NULL;
+            }
+        }
+
+        if (!(MOVE_SPEC -> clockwise))
+        {
+            strcat(result_str, "\'");
+        }
+        strcat(result_str, " ");
+    }
+
+
+    return result_str;
 }
 
 int is_block_complete(const RouxTracker* tracker, const Faces FACE_LEFT_OR_FACE_RIGHT)
@@ -258,120 +419,33 @@ int update_current_step(RouxTracker* tracker, const int continue_scramble, const
     return 0;
 }
 
-int apply_moves(RouxTracker* tracker, char** SEQUENCE)
-{
-    if (!tracker || !SEQUENCE || !(*SEQUENCE) || !(tracker -> MOVES_APPLIED))
-    {
-        return 1;
-    }
-    if (normalize_moves_applied(tracker))
-    {
-        return 1;
-    }
-
-
-    const size_t SEQUENCE_SIZE = strlen(*SEQUENCE);
-    //MOVES_APPLIED_SIZE is the number of bytes used, MOVES_APPLIED_MAX is the max amount of bytes
-    while (tracker -> MOVES_APPLIED_SIZE + SEQUENCE_SIZE > tracker -> MOVES_APPLIED_MAX)
-    {
-        if (resize_moves_applied(tracker))
-        {
-            return 1;
-        }
-    }
-
-    if (apply_move_from_formatted_str(tracker -> CUBE, SEQUENCE))
-    {
-        return 1;
-    }
-
-    memcpy(tracker -> MOVES_APPLIED + tracker -> MOVES_APPLIED_SIZE - 1, *SEQUENCE, SEQUENCE_SIZE + 1);
-    tracker -> MOVES_APPLIED_SIZE += (int)SEQUENCE_SIZE;
-
-    return 0;
-}
 
 int track_applied_move(RouxTracker* tracker, char** FORMATTED_MOVE)
 {
-    if (!tracker || !FORMATTED_MOVE || !(*FORMATTED_MOVE) || !(tracker -> MOVES_APPLIED))
+    if (!tracker || !FORMATTED_MOVE || !(*FORMATTED_MOVE) || !(tracker -> APPLIED))
     {
         return 1;
     }
 
-    if (normalize_moves_applied(tracker))
+    MoveSpec MOVE;
+    if (parse_move(FORMATTED_MOVE, &MOVE))
+    {
+        return 1;
+    }
+    if (push_move_to_MoveStack(tracker -> APPLIED, &MOVE))
+    {
+        return 1;
+    }
+    if (apply_move_from_spec(tracker -> CUBE, &MOVE))
     {
         return 1;
     }
 
-    if (apply_move_from_formatted_str(tracker -> CUBE, FORMATTED_MOVE))
-    {
-        return 1;
-    }
-
-    const size_t FORMATTED_MOVE_SIZE = strlen(*FORMATTED_MOVE);
-    while (tracker -> MOVES_APPLIED_SIZE + FORMATTED_MOVE_SIZE > tracker -> MOVES_APPLIED_MAX)
-    {
-        if (resize_moves_applied(tracker))
-        {
-            return 1;
-        }
-    }
-
-    memcpy(tracker -> MOVES_APPLIED + tracker -> MOVES_APPLIED_SIZE - 1, *FORMATTED_MOVE, FORMATTED_MOVE_SIZE + 1);
-    tracker -> MOVES_APPLIED_SIZE += (int)FORMATTED_MOVE_SIZE;
-
-    //step has to be updated manually after calling since there is no guarantee that the move is not a part of scramble/inspection
+       //step has to be updated manually after calling since there is no guarantee that the move is not a part of scramble/inspection
 
     return 0;
 }
 
-int resize_moves_applied(RouxTracker* tracker)
-{
-    if (!tracker || !tracker -> MOVES_APPLIED)
-    {
-        return 1;
-    }
-
-    const size_t new_size = tracker -> MOVES_APPLIED_MAX * 2;
-    char* p = malloc(sizeof(char)* new_size);
-    if (!p)
-    {
-        return 1;
-    }
-    memcpy(p, tracker -> MOVES_APPLIED, tracker -> MOVES_APPLIED_SIZE);
-    tracker -> MOVES_APPLIED = p;
-    tracker -> MOVES_APPLIED_MAX = new_size;
-    return 0;
-}
-
-int normalize_moves_applied(RouxTracker* tracker)
-{
-    if (!tracker || !tracker -> MOVES_APPLIED)
-    {
-        return 1;
-    }
-    if (tracker -> MOVES_APPLIED_SIZE <= 1)
-    {
-        return 0;
-    }
-    if (tracker -> MOVES_APPLIED[tracker -> MOVES_APPLIED_SIZE - 2] == ' ')
-    {
-        return 0;
-    }
-    if (tracker -> MOVES_APPLIED_SIZE + 1 > tracker -> MOVES_APPLIED_MAX)
-    {
-        if (resize_moves_applied(tracker))
-        {
-            return 1;
-        }
-    }
-    tracker -> MOVES_APPLIED[tracker -> MOVES_APPLIED_SIZE - 1] = ' ';
-    tracker -> MOVES_APPLIED[tracker -> MOVES_APPLIED_SIZE] = '\0';
-    tracker -> MOVES_APPLIED_SIZE++;
-
-    return 0;
-
-}
 
 void print_tracker_state(const RouxTracker* tracker)
 {
@@ -379,7 +453,7 @@ void print_tracker_state(const RouxTracker* tracker)
     {
         return;
     }
-    if (!tracker -> CUBE || !tracker -> MOVES_APPLIED)
+    if (!tracker -> CUBE || !tracker -> APPLIED)
     {
         return;
     }
@@ -395,5 +469,7 @@ void print_tracker_state(const RouxTracker* tracker)
         case SOLVED: printf("SOLVED\n"); break;
         case MILESTONE_NULL: printf("NULL\n"); break;
     }
-    printf("MOVES APPLIED: %s\n", tracker -> MOVES_APPLIED);
+    char* reconstruct = MoveStack_to_str(tracker -> APPLIED);
+    printf("MOVES APPLIED: %s\n", reconstruct);
+    free(reconstruct);
 }
