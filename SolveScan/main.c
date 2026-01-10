@@ -13,7 +13,7 @@
 // int ApplyMoveSeqTest(Cube* TEST);
 // int RouxTrackerTest();
 
-extern RouxTracker* tracker;
+extern RouxTracker* ROUX;
 
 
 int main (int argc, char** argv)

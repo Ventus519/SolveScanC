@@ -26,7 +26,6 @@ RouxTracker* create_RouxTracker()
 
     tracker -> CUBE = TEST;
 
-
     tracker -> STEP = SCRAMBLE;
 
     MoveStack* stack = create_MoveStack();
@@ -43,6 +42,32 @@ RouxTracker* create_RouxTracker()
         free(tracker);
     FAIL:
         return NULL;
+}
+
+RouxTracker* create_RouxTracker_from_MoveStack(MoveStack* MOVE_SEQUENCE_DEST)
+{
+    if (!MOVE_SEQUENCE_DEST)
+    {
+        return create_RouxTracker();
+    }
+
+    RouxTracker* tracker = malloc(sizeof(RouxTracker));
+    if (!tracker)
+    {
+        return NULL;
+    }
+    tracker -> APPLIED = MOVE_SEQUENCE_DEST;
+
+    Cube* TEST = create_cube();
+    if (!TEST)
+    {
+        free(tracker);
+        return NULL;
+    }
+    tracker -> CUBE = TEST;
+    tracker -> STEP = SCRAMBLE;
+
+    return tracker;
 }
 
 void free_RouxTracker(RouxTracker* tracker)
@@ -419,8 +444,34 @@ int update_current_step(RouxTracker* tracker, const int continue_scramble, const
     return 0;
 }
 
+int track_scramble(RouxTracker* tracker, MoveStack* SCRAMBLE_SEQUENCE)
+{
+    if (!tracker || !tracker -> APPLIED || !tracker -> CUBE || !SCRAMBLE_SEQUENCE)
+    {
+        return 1;
+    }
+    for (size_t i = 0; i < SCRAMBLE_SEQUENCE -> MOVE_SEQUENCE_LENGTH; i++)
+    {
+        MoveSpec* p_MOVE = &(SCRAMBLE_SEQUENCE -> MOVE_SEQUENCE[i]);
+        if (push_move_to_MoveStack(tracker -> APPLIED, p_MOVE))
+        {
+            return 1;
+        }
+        if (apply_move_from_spec(tracker -> CUBE, p_MOVE))
+        {
+            return 1;
+        }
+    }
+    if (update_current_step(tracker, 0, 1))
+    {
+        return 1;
+    }
 
-int track_applied_move(RouxTracker* tracker, char** FORMATTED_MOVE)
+    return 0;
+}
+
+
+int track_applied_move_formatted_str(RouxTracker* tracker, char** FORMATTED_MOVE)
 {
     if (!tracker || !FORMATTED_MOVE || !(*FORMATTED_MOVE) || !(tracker -> APPLIED))
     {
@@ -441,7 +492,7 @@ int track_applied_move(RouxTracker* tracker, char** FORMATTED_MOVE)
         return 1;
     }
 
-       //step has to be updated manually after calling since there is no guarantee that the move is not a part of scramble/inspection
+    //step has to be manually updated afterward
 
     return 0;
 }

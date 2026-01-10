@@ -38,6 +38,7 @@ typedef struct RouxTracker
 } RouxTracker;
 
 RouxTracker* create_RouxTracker();
+RouxTracker* create_RouxTracker_from_MoveStack(MoveStack* MOVE_SEQUENCE_DEST);
 void free_RouxTracker(RouxTracker* tracker);
 Cube* get_cube(const RouxTracker* tracker);
 
@@ -56,8 +57,9 @@ int is_second_block_complete(const RouxTracker* tracker);
 int last_layer_corners_aligned(const RouxTracker* tracker);
 
 int update_current_step(RouxTracker* tracker, int continue_scramble, int continue_inspect);
+int track_scramble(RouxTracker* tracker, MoveStack* SCRAMBLE_SEQUENCE);
 //int apply_moves(RouxTracker* tracker, char** SEQUENCE);
-int track_applied_move(RouxTracker* tracker, char** FORMATTED_MOVE);
+int track_applied_move_formatted_str(RouxTracker* tracker, char** FORMATTED_MOVE);
 
 int backtrack_moves(RouxTracker* tracker, int amount_backtracked);
 

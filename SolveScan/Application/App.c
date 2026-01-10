@@ -10,35 +10,35 @@ static int WINDOW_WIDTH = 800;
 static int WINDOW_HEIGHT = 600;
 
 
-RouxTracker* tracker = NULL;
+RouxTracker* ROUX = NULL;
 char* MOVES_DEFAULT = "R";
 
 WidgetLayout layout;
 
 static void on_button_apply_default_moves (gpointer user_data)
 {
-    if (!tracker || !tracker -> CUBE)
+    if (!ROUX || !ROUX -> CUBE)
     {
         g_print("SRM SOURCE FOUND\n");
         return;
     }
-    if (track_applied_move(tracker, &MOVES_DEFAULT))
+    if (track_applied_move_formatted_str(ROUX, &MOVES_DEFAULT))
     {
         g_print("COULD NOT APPLY MOVES: R\n");
         return;
     }
     g_print("Applied moves: %s\n", MOVES_DEFAULT);
-    g_print("Current reconstruction: %s\n", MoveStack_to_str(tracker -> APPLIED));
+    g_print("Current reconstruction: %s\n", MoveStack_to_str(ROUX -> APPLIED));
 }
 
 static void on_button_is_solved (gpointer user_data)
 {
-    if (!tracker || !tracker -> CUBE)
+    if (!ROUX || !ROUX -> CUBE)
     {
         g_print("SRM SOURCE FOUND\n");
         return;
     }
-    if (is_solved(tracker -> CUBE))
+    if (is_solved(ROUX -> CUBE))
     {
         g_print("THE CUBE IS SOLVED\n");
     }
@@ -50,7 +50,7 @@ static void on_button_is_solved (gpointer user_data)
 
 static void on_button_apply_moves_from_text (gpointer user_data)
 {
-    if (!tracker || !tracker -> CUBE || !layout.textField_moves_to_apply)
+    if (!ROUX || !ROUX -> CUBE || !layout.textField_moves_to_apply)
     {
         g_print("SRM SOURCE FOUND\n");
         return;
@@ -63,7 +63,7 @@ static void on_button_apply_moves_from_text (gpointer user_data)
         return;
     }
     char* moves_to_apply = gtk_entry_buffer_get_text(MOVES_TO_APPLY);
-    if (track_applied_move(tracker, &moves_to_apply))
+    if (track_applied_move_formatted_str(ROUX, &moves_to_apply))
     {
         g_print("INVALID MOVE SEQUENCE (or it was just more than 1 move for testing)\n");
         return;
@@ -71,7 +71,7 @@ static void on_button_apply_moves_from_text (gpointer user_data)
 
 
     g_print("APPLIED MOVES: %s\n", moves_to_apply);
-    g_print("Current reconstruction: %s\n", MoveStack_to_str(tracker -> APPLIED));
+    g_print("Current reconstruction: %s\n", MoveStack_to_str(ROUX -> APPLIED));
 
 
 
@@ -106,9 +106,9 @@ static void create_button_layout_controls(GtkWindow* APP_WINDOW, WidgetLayout* p
 
 void activate (GApplication *g_app)
 {
-    if (!tracker)
+    if (!ROUX)
     {
-        tracker = create_RouxTracker();
+        ROUX = create_RouxTracker();
     }
 
 
