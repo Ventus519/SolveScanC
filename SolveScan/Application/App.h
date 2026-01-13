@@ -7,7 +7,7 @@
 #define SOLVESCAN_APP_H
 
 #include "../Cube3/Cube3.h"
-#include "../CubeTracker/RouxTracker.h"
+#include "../CubeTracker/CubeTracker.h"
 #include "gtk/gtk.h"
 
 typedef struct WIDGET_MAP{

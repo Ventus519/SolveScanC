@@ -53,6 +53,55 @@ Cube* create_cube()
         return NULL;
 }
 
+int initialize_cube(Cube* cube)
+{
+    if (!cube)
+    {
+        return 1;
+    }
+
+    for (int i = 0; i < 3; i++)
+    {
+        for (int j = 0; j < 3; j++)
+        {
+            for (int k = 0; k < 3; k++)
+            {
+                cube -> GRAND_CUBE[i][j][k] = createCubie(i-1, j-1, k-1);
+                if (!cube -> GRAND_CUBE[i][j][k])
+                {
+                    goto ERROR_FAIL;
+                }
+
+            }
+        }
+    }
+
+    if (set_face_colors(cube, FACE_FRONT, GREEN) ||
+        set_face_colors(cube, FACE_UP, WHITE) ||
+        set_face_colors(cube, FACE_RIGHT, RED) ||
+        set_face_colors(cube, FACE_BACK, BLUE) ||
+        set_face_colors(cube, FACE_DOWN, YELLOW) ||
+        set_face_colors(cube, FACE_LEFT, ORANGE))
+    {
+        goto ERROR_FAIL;
+    }
+    return 0;
+
+    ERROR_FAIL:
+        for (int i = 0; i < 3; i++)
+        {
+            for (int j = 0; j < 3; j++)
+            {
+                for (int k = 0; k < 3; k++)
+                {
+                    freeCubie(cube -> GRAND_CUBE[i][j][k]);
+                }
+            }
+        }
+        return 1;
+
+}
+
 void free_cube(Cube* source)
 {
     if (source != NULL)
@@ -107,6 +156,40 @@ int set_face_colors(Cube* source, const Faces FACE, const Colors COLOR)
         }
     }
     return 0;
+}
+
+Colors get_face_center_color(const Cube* source, const Faces FACE)
+{
+    if (!source)
+    {
+        return COLORS_NULL;
+    }
+    Axis FIXED_AXIS;
+    int fixed_value;
+    switch (FACE)
+    {
+        case FACE_FRONT: FIXED_AXIS = AXIS_Z; fixed_value = 1; break;
+        case FACE_UP: FIXED_AXIS = AXIS_Y; fixed_value = 1; break;
+        case FACE_RIGHT: FIXED_AXIS = AXIS_X; fixed_value = 1; break;
+        case FACE_BACK: FIXED_AXIS = AXIS_Z; fixed_value = -1; break;
+        case FACE_DOWN: FIXED_AXIS = AXIS_Y; fixed_value = -1; break;
+        case FACE_LEFT: FIXED_AXIS = AXIS_X; fixed_value = -1; break;
+        default: return COLORS_NULL;
+    }
+    Cubie* FACE_CENTER;
+    switch (FIXED_AXIS)
+    {
+        case AXIS_Z: FACE_CENTER = get_cubie_at_position(source, 0, 0, fixed_value); break;
+        case AXIS_Y: FACE_CENTER = get_cubie_at_position(source, 0, fixed_value, 0); break;
+        case AXIS_X: FACE_CENTER = get_cubie_at_position(source, fixed_value, 0, 0); break;
+        default: return COLORS_NULL;
+    }
+    if (!FACE_CENTER)
+    {
+        return COLORS_NULL;
+    }
+    return FACE_CENTER -> FACE_COLORS[FACE];
+
 }
 
 Cubie* get_cubie_at_position(const Cube* source, const int x, const int y, const int z)
@@ -394,7 +477,7 @@ int rotate_about_axis(Cube* source, const Axis AXIS_OF_ROTATION, const int count
     return sync_cubie_positions(source);
 }
 
-int apply_move_from_spec(Cube* source, MoveSpec* MOVE_SPEC)
+int apply_move_from_spec(Cube* source, const MoveSpec* MOVE_SPEC)
 {
     if (!source || !MOVE_SPEC)
     {

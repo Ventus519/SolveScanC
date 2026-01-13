@@ -1,182 +1,176 @@
 //
-// Created by Ven519 on 2026/01/03.
+// Created by Ven519 on 2026/01/11.
 //
 
 #include "CubeTracker.h"
-#include "RouxTracker.h"
-
-#include <stdio.h>
 #include <string.h>
-#include <stdlib.h>
+#include <stdio.h>
 
-CubeTracker* create_CubeTracker(char* file_path)
+int initialize_CubeTracker(CubeTracker* tracker, const char* file_path, const EnabledTrackers TRACKER_TO_ENABLE)
 {
-    if (!file_path)
+    if (!tracker || !file_path)
     {
-        return NULL;
+        return 1;
     }
-    CubeTracker* tracker = malloc(sizeof(CubeTracker));
-    if (!tracker)
-    {
-        goto CUBE_TRACKER_ALLOC_FAIL;
-    }
-    if (create_trackers(tracker, ROUX))
-    {
-        goto SUB_TRACKER_ALLOC_FAIL;
-    }
-    tracker -> RECONSTRUCTION = "SCRAMBLE: \0"; //assumes default state is scramble
-    tracker -> RECONSTRUCTION_size = 11; //size of "SCRAMBLE: \0"
-    tracker -> RECONSTRUCTION_max = 22; //2 * (RECONSTRUCTION_size) for safety
     tracker -> save_file_path = file_path;
 
-    return tracker;
-    SUB_TRACKER_ALLOC_FAIL:
-        free_CubeTracker(tracker);
-    CUBE_TRACKER_ALLOC_FAIL:
-        return NULL;
+    tracker -> ENABLED = TRACKER_TO_ENABLE;
+
+    MoveStack* STACK = create_MoveStack();
+    if (!STACK)
+    {
+        return 1;
+    }
+    tracker -> p_MOVES_APPLIED = STACK;
+
+    tracker -> reconstruction_size = 11;
+    tracker -> reconstruction_max = 22;
+    char* RECONSTRUCT_TEST = malloc(sizeof(char) * tracker -> reconstruction_max);
+    if (!RECONSTRUCT_TEST)
+    {
+        goto RECONSTRUCTION_FAIL;
+    }
+    RECONSTRUCT_TEST[0] = '\0';
+    strcat (RECONSTRUCT_TEST, "SCRAMBLE: ");
+    tracker -> reconstruction = RECONSTRUCT_TEST;
+
+    switch (TRACKER_TO_ENABLE)
+    {
+        case BEGINNERS: break;
+        case CFOP: break;
+        case ROUX:
+            {
+                RouxTracker* TRACK_ROUX = malloc(sizeof(RouxTracker));
+                if (initialize_RouxTracker(TRACK_ROUX))
+                {
+                    goto ENABLED_TRACKER_FAIL;
+                }
+                tracker -> tracker_ROUX = TRACK_ROUX;
+            }
+        case ZZ: break;
+    }
+
+
+
+    return 0;
+
+    ENABLED_TRACKER_FAIL:
+        free(RECONSTRUCT_TEST);
+    RECONSTRUCTION_FAIL:
+        free(STACK);
+        return 1;
 }
 
-int create_trackers(CubeTracker* tracker, const EnabledTrackers USER_ENABLED_TRACKER)
+int is_invalid_CubeTracker(const CubeTracker* tracker)
 {
     if (!tracker)
     {
         return 1;
     }
-    if (USER_ENABLED_TRACKER == ROUX)
+    if (!tracker -> reconstruction)
     {
-        RouxTracker* ROUX = create_RouxTracker();
-        if (!ROUX)
+        return 1;
+    }
+    switch (tracker -> ENABLED)
+    {
+        case BEGINNERS: return 0;
+        case CFOP: return 0;
+        case ROUX: return (!tracker -> tracker_ROUX);
+        default: return 0;
+    }
+}
+
+int track_scramble(CubeTracker* tracker, const MoveStack* SCRAMBLE_SEQUENCE)
+{
+    if (is_invalid_CubeTracker(tracker) || !SCRAMBLE_SEQUENCE)
+    {
+        return 1;
+    }
+
+    int moves_successful = 0; //this will be used once backtracking has been implemented
+    for (int i = 0; i < SCRAMBLE_SEQUENCE -> MOVE_SEQUENCE_LENGTH; i++)
+    {
+        if (track_move_from_spec(tracker, &SCRAMBLE_SEQUENCE -> MOVE_SEQUENCE[i]))
         {
+            (void) backtrack_moves(tracker, moves_successful);
             return 1;
         }
-        tracker -> tracker_ROUX = ROUX;
+        moves_successful++;
     }
 
     return 0;
 }
 
-void free_CubeTracker(CubeTracker* tracker)
+int track_move_from_spec(CubeTracker* tracker, const MoveSpec* MOVE_SPEC)
 {
-    if (!tracker)
+    if (is_invalid_CubeTracker(tracker) || !MOVE_SPEC)
     {
-        return;
+        return 1;
     }
-    free_trackers(tracker);
-    free(tracker -> RECONSTRUCTION);
 
-    free(tracker);
+    if (apply_move_from_spec(&tracker -> tracker_ROUX -> CUBE, MOVE_SPEC))
+    {
+        return 1;
+    }
+    if (push_move_to_MoveStack(tracker -> p_MOVES_APPLIED, MOVE_SPEC))
+    {
+        return 1;
+    }
+
+    return 0;
 }
 
-void free_trackers(CubeTracker* tracker)
+int backtrack_moves(CubeTracker* tracker, const int count)
 {
-    if (!tracker)
+    if (is_invalid_CubeTracker(tracker))
     {
-        return;
+        return 1;
     }
-
-    if (tracker -> tracker_ROUX != NULL)
+    for (int i = 0; i < count; i++)
     {
-        free_RouxTracker(tracker -> tracker_ROUX);
+        MoveSpec MOVE_TO_INVERT = pop_move_from_MoveStack(tracker -> p_MOVES_APPLIED);
+        MOVE_TO_INVERT.clockwise = !MOVE_TO_INVERT.clockwise;
+        if (apply_move_from_spec(&tracker -> tracker_ROUX -> CUBE, &MOVE_TO_INVERT))
+        {
+            return 1;
+        }
     }
-    //this space is for other trackers when their source files have been created and tested
-
+    return 0;
 }
 
 int resize_reconstruction(CubeTracker* tracker)
 {
-    if (!tracker || !tracker -> RECONSTRUCTION)
+    if (is_invalid_CubeTracker(tracker))
     {
         return 1;
     }
-
-    const size_t new_size = tracker -> RECONSTRUCTION_max * 2;
-    char* p = malloc(sizeof(char)* new_size);
-    if (!p)
+    char* RECONSTRUCT_TEST = malloc(sizeof(char) * tracker -> reconstruction_max * 2);
+    if (!RECONSTRUCT_TEST)
     {
         return 1;
     }
-    memcpy(p, tracker -> RECONSTRUCTION, tracker -> RECONSTRUCTION_size);
-    tracker -> RECONSTRUCTION = p;
-    tracker -> RECONSTRUCTION_max = new_size;
+    for (int i = 0; i < tracker -> reconstruction_max; i++)
+    {
+        RECONSTRUCT_TEST[i] = tracker -> reconstruction[i];
+    }
+    free(tracker -> reconstruction);
+    tracker -> reconstruction = RECONSTRUCT_TEST;
     return 0;
 }
 
-int append_to_reconstruction(CubeTracker* tracker, const char* ENTRY)
+int append_to_reconstruction(CubeTracker* tracker, const char* string_entry)
 {
-    if (!tracker || !tracker -> RECONSTRUCTION || !ENTRY)
+    if (is_invalid_CubeTracker(tracker) || !string_entry)
     {
         return 1;
     }
-    while (strlen(ENTRY) + tracker -> RECONSTRUCTION_size > tracker -> RECONSTRUCTION_max)
+    while (tracker -> reconstruction_size + strlen(string_entry) >= tracker -> reconstruction_max)
     {
         if (resize_reconstruction(tracker))
         {
             return 1;
         }
     }
-    strcat(tracker -> RECONSTRUCTION, ENTRY);
-    tracker -> RECONSTRUCTION_size += strlen(ENTRY);
-    return 0;
-}
-
-int update_reconstruction(CubeTracker* tracker, char** FORMATTED_MOVE_TO_APPLY)
-{
-    if (!tracker || !tracker -> RECONSTRUCTION || !FORMATTED_MOVE_TO_APPLY || !(*FORMATTED_MOVE_TO_APPLY))
-    {
-        return 1;
-    }
-
-    if (tracker -> tracker_ROUX != NULL)
-    {
-        return update_ROUX_reconstruction(tracker, FORMATTED_MOVE_TO_APPLY);
-    }
-
-    return 0;
-}
-
-int update_ROUX_reconstruction(CubeTracker* TRACK, char** FORMATTED_MOVE_TO_APPLY)
-{
-    if (!TRACK || !(TRACK -> tracker_ROUX) || !FORMATTED_MOVE_TO_APPLY || !(*FORMATTED_MOVE_TO_APPLY))
-    {
-        return 1;
-    }
-
-    const RouxMilestones CURRENT_STEP = TRACK -> tracker_ROUX -> STEP;
-
-    if (track_applied_move_formatted_str(TRACK -> tracker_ROUX, FORMATTED_MOVE_TO_APPLY))
-    {
-        return 1;
-    }
-    if (update_current_step(TRACK -> tracker_ROUX, 0, 0))
-    {
-        return 1;
-    }
-    const RouxMilestones NEW_STEP = TRACK -> tracker_ROUX -> STEP;
-
-    if (CURRENT_STEP != NEW_STEP)
-    {
-        append_to_reconstruction(TRACK, "\n");
-        switch (NEW_STEP)
-        {
-            case SCRAMBLE: append_to_reconstruction(TRACK, "SCRAMBLE: "); break;
-            case INSPECT: append_to_reconstruction(TRACK, "INSPECT: "); break;
-            case FIRST_BLOCK: append_to_reconstruction(TRACK, "FB: "); break;
-            case SECOND_BLOCK: append_to_reconstruction(TRACK, "SB: "); break;
-            case LAST_LAYER_CORNERS: append_to_reconstruction(TRACK, "CMLL: "); break;
-            case LAST_SIX_EDGES: append_to_reconstruction(TRACK, "L6E: "); break;
-            case SOLVED: append_to_reconstruction(TRACK, "SOLVED"); break;
-            default: break;
-        }
-    }
-    //need to actually implement the updating
-    /*
-     *Current plan: make the update reconstruction methods take the move sequence as a parameter
-     *Check the milestone before the sequence and compare it as each move is applied
-     *If the move sequence results in a different milestone, then edit it at the point of concern
-     *
-     *this will likely feel very redundant since I already have an apply move sequence function in Cube.c
-     *
-     */
-
+    strcat(tracker -> reconstruction, string_entry);
     return 0;
 }

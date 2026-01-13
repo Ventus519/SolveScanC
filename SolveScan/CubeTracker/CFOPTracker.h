@@ -1,0 +1,47 @@
+//
+// Created by Ven519 on 2026/01/12.
+//
+
+#ifndef SOLVESCAN_CFOPTRACKER_H
+#define SOLVESCAN_CFOPTRACKER_H
+
+
+
+#include "../Cube3/Cube3.h"
+#include "MoveStack.h"
+
+typedef enum CFOPMilestones
+{
+    CFOP_SCRAMBLE,
+    CFOP_INSPECT,
+    CFOP_CROSS,
+    CFOP_F2L_1,
+    CFOP_F2L_2,
+    CFOP_F2L_3,
+    CFOP_F2L,
+    CFOP_OLL,
+    CFOP_PLL,
+    CFOP_SOLVED,
+    CFOP_MILESTONE_NULL
+} CFOPMilestones;
+
+typedef struct CFOP_TRACKER {
+    CFOPMilestones STEP;
+    Cube CUBE;
+    int f2l_pairs_completed;
+} CFOPTracker;
+
+int initialize_CFOPTracker(CFOPTracker* tracker);
+void free_CFOPTracker(CFOPTracker* tracker);
+
+//CFOP STEPS: CROSS, F2L, OLL, PLL
+int is_cross_complete(const CFOPTracker* tracker);
+int count_complete_f2l_pairs(const CFOPTracker* tracker);
+int is_f2l_pair_complete(const CFOPTracker* tracker, Faces FACE_FRONT_OR_FACE_BACK, Faces FACE_RIGHT_OR_FACE_LEFT);
+//if we store the complete f2l pairs in a bit mask (which will be called f2l_pairs, then:
+
+
+int is_f2l_complete(const CFOPTracker* tracker);
+int is_oll_complete(const CFOPTracker* tracker);
+
+#endif //SOLVESCAN_CFOPTRACKER_H

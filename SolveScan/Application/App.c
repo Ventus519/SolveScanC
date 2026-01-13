@@ -4,41 +4,44 @@
 
 #include "App.h"
 #include "../Cube3/Cube3.h"
-#include "../CubeTracker/RouxTracker.h"
+#include "../CubeTracker/CubeTracker.h"
 
 static int WINDOW_WIDTH = 800;
 static int WINDOW_HEIGHT = 600;
 
 
-RouxTracker* ROUX = NULL;
+CubeTracker TRACKER;
 char* MOVES_DEFAULT = "R";
 
 WidgetLayout layout;
 
 static void on_button_apply_default_moves (gpointer user_data)
 {
-    if (!ROUX || !ROUX -> CUBE)
+    if (is_invalid_CubeTracker(&TRACKER))
     {
-        g_print("SRM SOURCE FOUND\n");
+        g_print("SRM SOURCE FOUND (INVALID CUBE TRACKER :: APPLY DEFAULT MOVES)\n");
+        initialize_CubeTracker(&TRACKER, "../data.txt", ROUX);
         return;
     }
-    if (track_applied_move_formatted_str(ROUX, &MOVES_DEFAULT))
+    MoveSpec MOVE_TO_APPLY;
+    if (parse_move(&MOVES_DEFAULT, &MOVE_TO_APPLY))
     {
         g_print("COULD NOT APPLY MOVES: R\n");
         return;
     }
+    track_move_from_spec(&TRACKER, &MOVE_TO_APPLY);
     g_print("Applied moves: %s\n", MOVES_DEFAULT);
-    g_print("Current reconstruction: %s\n", MoveStack_to_str(ROUX -> APPLIED));
+    g_print("Current reconstruction: %s\n", MoveStack_to_str(TRACKER.p_MOVES_APPLIED));
 }
 
 static void on_button_is_solved (gpointer user_data)
 {
-    if (!ROUX || !ROUX -> CUBE)
+    if (is_invalid_CubeTracker(&TRACKER))
     {
-        g_print("SRM SOURCE FOUND\n");
+        g_print("SRM SOURCE FOUND (INVALID CUBE TRACKER :: IS SOLVED)\n");
         return;
     }
-    if (is_solved(ROUX -> CUBE))
+    if (is_solved(&TRACKER.tracker_ROUX -> CUBE))
     {
         g_print("THE CUBE IS SOLVED\n");
     }
@@ -50,28 +53,30 @@ static void on_button_is_solved (gpointer user_data)
 
 static void on_button_apply_moves_from_text (gpointer user_data)
 {
-    if (!ROUX || !ROUX -> CUBE || !layout.textField_moves_to_apply)
+    if (is_invalid_CubeTracker(&TRACKER) || !layout.textField_moves_to_apply)
     {
-        g_print("SRM SOURCE FOUND\n");
+        g_print("SRM SOURCE FOUND (INVALID CUBE TRACKER :: APPLY MOVES TEXT)\n");
         return;
     }
 
     GtkEntryBuffer* MOVES_TO_APPLY = gtk_entry_get_buffer(GTK_ENTRY (layout.textField_moves_to_apply));
     if (!MOVES_TO_APPLY)
     {
-        g_print("SRM SOURCE FOUND\n");
+        g_print("SRM SOURCE FOUND (INVALID MOVE STRING :: APPLY_MOVES TEXT)\n");
         return;
     }
     char* moves_to_apply = gtk_entry_buffer_get_text(MOVES_TO_APPLY);
-    if (track_applied_move_formatted_str(ROUX, &moves_to_apply))
+    MoveSpec MOVE_TO_APPLY;
+    if (parse_move(&moves_to_apply, &MOVE_TO_APPLY))
     {
-        g_print("INVALID MOVE SEQUENCE (or it was just more than 1 move for testing)\n");
+        g_print("COULD NOT PARSE MOVE (PROBABLY TOO LONG)");
         return;
     }
+    track_move_from_spec(&TRACKER, &MOVE_TO_APPLY);
 
 
     g_print("APPLIED MOVES: %s\n", moves_to_apply);
-    g_print("Current reconstruction: %s\n", MoveStack_to_str(ROUX -> APPLIED));
+    g_print("Current reconstruction: %s\n", MoveStack_to_str(TRACKER.p_MOVES_APPLIED));
 
 
 
@@ -106,10 +111,7 @@ static void create_button_layout_controls(GtkWindow* APP_WINDOW, WidgetLayout* p
 
 void activate (GApplication *g_app)
 {
-    if (!ROUX)
-    {
-        ROUX = create_RouxTracker();
-    }
+    initialize_CubeTracker(&TRACKER, "../data.txt", ROUX);
 
 
     GtkApplication* app = GTK_APPLICATION (g_app);

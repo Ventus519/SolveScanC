@@ -1,45 +1,45 @@
 //
-// Created by Ven519 on 2026/01/03.
+// Created by Ven519 on 2026/01/11.
 //
 
 #ifndef SOLVESCAN_CUBETRACKER_H
 #define SOLVESCAN_CUBETRACKER_H
 
-#pragma once
 #include "RouxTracker.h"
-#include <stdlib.h>
-#include <stdio.h>
 
-typedef struct {
-    RouxTracker* tracker_ROUX;
-
-    char* RECONSTRUCTION;
-    size_t RECONSTRUCTION_max;
-    size_t RECONSTRUCTION_size;
-
-    char* save_file_path;
-} CubeTracker;
-
-typedef enum ENABLED_TRACKERS {
-    BEGINNERS_CFOP,
+typedef enum TRACKERS_ENABLED {
+    BEGINNERS,
     CFOP,
     ROUX,
     ZZ
 } EnabledTrackers;
 
-CubeTracker* create_CubeTracker(char* file_path);
-int create_trackers(CubeTracker* tracker, EnabledTrackers USER_ENABLED_TRACKER);
 
-void free_CubeTracker(CubeTracker* tracker);
-void free_trackers(CubeTracker* tracker);
+typedef struct CUBE_TRACKER {
+    MoveStack* p_MOVES_APPLIED;
+
+    char* reconstruction;
+    size_t reconstruction_size;
+    size_t reconstruction_max;
+
+    EnabledTrackers ENABLED;
+    RouxTracker* tracker_ROUX;
+
+    char* save_file_path;
+
+} CubeTracker;
+
+int initialize_CubeTracker(CubeTracker* tracker, const char* file_path, EnabledTrackers TRACKER_TO_ENABLE);
+
+int is_invalid_CubeTracker(const CubeTracker* tracker);
+
+int track_scramble(CubeTracker* tracker, const MoveStack* SCRAMBLE_SEQUENCE);
+
+int track_move_from_spec(CubeTracker* tracker, const MoveSpec* MOVE_SPEC);
+int backtrack_moves(CubeTracker* tracker, int count);
 
 int resize_reconstruction(CubeTracker* tracker);
-int append_to_reconstruction(CubeTracker* tracker, const char* ENTRY);
+int append_to_reconstruction(CubeTracker* tracker, const char* string_entry);
 
-int update_reconstruction(CubeTracker* tracker, char** FORMATTED_MOVE_TO_APPLY);
-int read_reconstruction_from_file(CubeTracker* tracker);
-int write_reconstruction_to_file(CubeTracker* tracker);
-
-int update_ROUX_reconstruction(CubeTracker* TRACK, char** FORMATTED_MOVE_TO_APPLY);
 
 #endif //SOLVESCAN_CUBETRACKER_H

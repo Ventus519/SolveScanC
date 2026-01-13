@@ -21,8 +21,15 @@ message("GTK INCLUDE_DIRS: ${GTK_INCLUDE_DIRS}")
 message("INCLUDED LIBRARIES: ${GTK_LIBRARIES}" )
 ADD_DEFINITIONS(${GTK4_CFLAGS_OTHER})
 
-add_library(RouxTracker SHARED CubeTracker/RouxTracker.h
-        CubeTracker/RouxTracker.c)
+
+set(CubeTrackerSRCS CubeTracker/RouxTracker.c
+                    CubeTracker/RouxTracker.h
+                    CubeTracker/MoveStack.c
+                    CubeTracker/MoveStack.h
+                    CubeTracker/CubeTracker.c
+                    CubeTracker/CubeTracker.h)
+
+add_library(RouxTracker SHARED ${CubeTrackerSRCS})
 
 target_link_libraries(RouxTracker PRIVATE Cube3)
 

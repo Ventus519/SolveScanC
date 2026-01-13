@@ -13,7 +13,7 @@
 // int ApplyMoveSeqTest(Cube* TEST);
 // int RouxTrackerTest();
 
-extern RouxTracker* ROUX;
+extern CubeTracker TRACKER;
 
 
 int main (int argc, char** argv)
@@ -22,6 +22,11 @@ int main (int argc, char** argv)
 
     g_signal_connect(gtk_app, "activate", G_CALLBACK(activate), NULL);
 
+    if (g_application_run (G_APPLICATION (gtk_app), argc, argv))
+    {
+        return 1;
+    }
 
-    return g_application_run (G_APPLICATION (gtk_app), argc, argv);
+
+    return 0;
 }
