@@ -65,7 +65,7 @@ Colors getOppositeColor(const Colors COLOR)
     }
 }
 
-int cycleFaces(Cubie* source, const Faces FACE1, const Faces FACE2, const Faces FACE3, const Faces FACE4, const int clockwise)
+static int cycleFaces(Cubie* source, const Faces FACE1, const Faces FACE2, const Faces FACE3, const Faces FACE4, const int clockwise)
 {
     if (!source)
     {
@@ -91,7 +91,7 @@ int cycleFaces(Cubie* source, const Faces FACE1, const Faces FACE2, const Faces 
     return 0;
 }
 
-int rotateZ(Cubie* source, const int clockwise)
+static int rotateZ(Cubie* source, const int clockwise)
 {
     if (!source)
     {
@@ -116,7 +116,7 @@ int rotateZ(Cubie* source, const int clockwise)
     return cycleFaces(source, FACE_UP, FACE_RIGHT, FACE_DOWN, FACE_LEFT, clockwise);
 }
 
-int rotateY(Cubie* source, const int clockwise)
+static int rotateY(Cubie* source, const int clockwise)
 {
     if (!source)
     {
@@ -140,7 +140,7 @@ int rotateY(Cubie* source, const int clockwise)
     return cycleFaces(source, FACE_RIGHT, FACE_FRONT, FACE_LEFT, FACE_BACK, clockwise);
 }
 
-int rotateX(Cubie* source, const int clockwise)
+static int rotateX(Cubie* source, const int clockwise)
 {
     if (!source)
     {
@@ -245,12 +245,32 @@ char* MoveSpec_to_str(const MoveSpec* MOVE_SPEC)
     return result;
 }
 
-int isSame(const Cubie* source, const Cubie* other)
+int isSameCubie(const Cubie* source, const Cubie* other)
 {
     if (!source || !other)
     {
         return 0;
     }
+
+    const Vec3* source_pos = getCubiePosition(source);
+    const Vec3* other_pos = getCubiePosition(other);
+    if (!source_pos || !other_pos)
+    {
+        return 0;
+    }
+    if (source_pos -> x != other_pos -> x)
+    {
+        return 0;
+    }
+    if (source_pos -> y != other_pos -> y)
+    {
+        return 0;
+    }
+    if (source_pos -> z != other_pos -> z)
+    {
+        return 0;
+    }
+
 
     for (int i = 0; i < 6; i++)
     {

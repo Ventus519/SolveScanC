@@ -20,6 +20,15 @@ int initialize_CFOPTracker(CFOPTracker* tracker)
     return 0;
 }
 
+void free_CFOPTracker(CFOPTracker* tracker)
+{
+    if (!tracker)
+    {
+        return;
+    }
+    free(tracker);
+}
+
 int is_cross_complete(const CFOPTracker* tracker)
 {
     if (!tracker)
@@ -132,5 +141,53 @@ int is_f2l_pair_complete(const CFOPTracker* tracker, const Faces FACE_FRONT_OR_F
         return 0;
     }
 
+    return 1;
+}
+
+int update_completed_f2l_pairs(CFOPTracker* tracker)
+{
+    if (!tracker)
+    {
+        return 1;
+    }
+
+    if (is_f2l_pair_complete(tracker, FACE_FRONT, FACE_LEFT))
+    {
+        tracker -> f2l_pairs_completed |= 0x01;
+    }
+    if (is_f2l_pair_complete(tracker, FACE_FRONT, FACE_RIGHT))
+    {
+        tracker -> f2l_pairs_completed |= 0x02;
+    }
+    if (is_f2l_pair_complete(tracker, FACE_BACK, FACE_LEFT))
+    {
+        tracker -> f2l_pairs_completed |= 0x04;
+    }
+    if (is_f2l_pair_complete(tracker, FACE_BACK, FACE_RIGHT))
+    {
+        tracker -> f2l_pairs_completed |= 0x08;
+    }
+
+    return 0;
+}
+
+int is_oll_complete(const CFOPTracker* tracker)
+{
+    if (!tracker)
+    {
+        return 0;
+    }
+    const Colors U_FACE_CENTER_COLOR = get_face_center_color(&tracker -> CUBE, FACE_UP);
+    for (int x = -1; x < 2; x++)
+    {
+        for (int z = -1; z < 2; z++)
+        {
+            const Cubie* TEST = get_cubie_at_position(&tracker -> CUBE, x, 1, z);
+            if (TEST -> FACE_COLORS[FACE_UP] != U_FACE_CENTER_COLOR)
+            {
+                return 0;
+            }
+        }
+    }
     return 1;
 }

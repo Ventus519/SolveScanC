@@ -10,48 +10,6 @@
 #include <errno.h>
 
 
-Cube* create_cube()
-{
-    Cube* cube = malloc(sizeof(Cube));
-    if (!cube)
-    {
-        return NULL;
-    }
-
-    for (int i = 0; i < 3; i++)
-    {
-        for (int j = 0; j < 3; j++)
-        {
-            for (int k = 0; k < 3; k++)
-            {
-                cube -> GRAND_CUBE[i][j][k] = createCubie(i-1, j-1, k-1);
-                if (!cube -> GRAND_CUBE[i][j][k])
-                {
-                    goto ERROR_FAIL;
-                }
-
-            }
-        }
-    }
-
-
-    if (set_face_colors(cube, FACE_FRONT, GREEN) ||
-        set_face_colors(cube, FACE_UP, WHITE) ||
-        set_face_colors(cube, FACE_RIGHT, RED) ||
-        set_face_colors(cube, FACE_BACK, BLUE) ||
-        set_face_colors(cube, FACE_DOWN, YELLOW) ||
-        set_face_colors(cube, FACE_LEFT, ORANGE))
-    {
-        goto ERROR_FAIL;
-    }
-
-
-    return cube;
-
-    ERROR_FAIL:
-        free_cube(cube);
-        return NULL;
-}
 
 int initialize_cube(Cube* cube)
 {
@@ -100,24 +58,6 @@ int initialize_cube(Cube* cube)
         }
         return 1;
 
-}
-
-void free_cube(Cube* source)
-{
-    if (source != NULL)
-    {
-        for (int i = 0; i < 3; i++)
-        {
-            for (int j = 0; j < 3; j++)
-            {
-                for (int k = 0; k < 3; k++)
-                {
-                    free(source -> GRAND_CUBE[i][j][k]);
-                }
-            }
-        }
-    }
-    free(source);
 }
 
 int set_face_colors(Cube* source, const Faces FACE, const Colors COLOR)
@@ -207,7 +147,50 @@ Cubie* get_cubie_at_position(const Cube* source, const int x, const int y, const
     return (source -> GRAND_CUBE[x+1][y+1][z+1]);
 }
 
-int move_f(Cube* source, const int count, const int clockwise)
+static int sync_cubie_positions(Cube* source)
+{
+    if (!source)
+    {
+        return 1;
+    }
+    Cubie* RESYNCED_CUBIES[3][3][3];
+    for (int i = 0; i < 3; i++)
+    {
+        for (int j = 0; j < 3; j++)
+        {
+            for (int k = 0; k < 3; k++)
+            {
+                Cubie* modifying = get_cubie_at_position(source, i-1, j-1, k-1);
+                const Vec3* pos = getCubiePosition(modifying);
+                if (!modifying || !pos)
+                {
+                    return 1;
+                }
+
+                //check for valid position
+                if (abs(pos -> x) >= 2 || abs(pos -> y) >= 2 || abs(pos -> z) >= 2)
+                {
+                    return 1;
+                }
+                RESYNCED_CUBIES[pos->x+1][pos->y+1][pos->z+1] = modifying;
+            }
+        }
+    }
+    for (int i = 0; i < 3; i++)
+    {
+        for (int j = 0; j < 3; j++)
+        {
+            for (int k = 0; k < 3; k++)
+            {
+                source -> GRAND_CUBE[i][j][k] = RESYNCED_CUBIES[i][j][k];
+            }
+        }
+    }
+    return 0;
+}
+
+
+static int move_f(Cube* source, const int count, const int clockwise)
 {
     if (!source)
     {
@@ -235,7 +218,7 @@ int move_f(Cube* source, const int count, const int clockwise)
 
 }
 
-int move_u(Cube* source, const int count, const int clockwise)
+static int move_u(Cube* source, const int count, const int clockwise)
 {
     if (!source)
     {
@@ -261,7 +244,7 @@ int move_u(Cube* source, const int count, const int clockwise)
     return sync_cubie_positions(source);
 }
 
-int move_r(Cube* source, const int count, const int clockwise)
+static int move_r(Cube* source, const int count, const int clockwise)
 {
     if (!source)
     {
@@ -287,7 +270,7 @@ int move_r(Cube* source, const int count, const int clockwise)
     return sync_cubie_positions(source);
 }
 
-int move_b(Cube* source, const int count, const int clockwise)
+static int move_b(Cube* source, const int count, const int clockwise)
 {
     if (!source)
     {
@@ -313,7 +296,7 @@ int move_b(Cube* source, const int count, const int clockwise)
     return sync_cubie_positions(source);
 }
 
-int move_d(Cube* source, const int count, const int clockwise)
+static int move_d(Cube* source, const int count, const int clockwise)
 {
     if (!source)
     {
@@ -339,7 +322,7 @@ int move_d(Cube* source, const int count, const int clockwise)
     return sync_cubie_positions(source);
 }
 
-int move_l(Cube* source, const int count, const int clockwise)
+static int move_l(Cube* source, const int count, const int clockwise)
 {
     if (!source)
     {
@@ -365,7 +348,7 @@ int move_l(Cube* source, const int count, const int clockwise)
     return sync_cubie_positions(source);
 }
 
-int slice_s(Cube* source, const int count, const int clockwise)
+static int slice_s(Cube* source, const int count, const int clockwise)
 {
     if (!source)
     {
@@ -391,7 +374,7 @@ int slice_s(Cube* source, const int count, const int clockwise)
     return sync_cubie_positions(source);
 }
 
-int slice_e(Cube* source, const int count, const int clockwise)
+static int slice_e(Cube* source, const int count, const int clockwise)
 {
     if (!source)
     {
@@ -417,7 +400,7 @@ int slice_e(Cube* source, const int count, const int clockwise)
     return sync_cubie_positions(source);
 }
 
-int slice_m(Cube* source, const int count, const int clockwise)
+static int slice_m(Cube* source, const int count, const int clockwise)
 {
     if (!source)
     {
@@ -443,7 +426,7 @@ int slice_m(Cube* source, const int count, const int clockwise)
     return sync_cubie_positions(source);
 }
 
-int rotate_about_axis(Cube* source, const Axis AXIS_OF_ROTATION, const int count, const int clockwise)
+static int rotate_about_axis(Cube* source, const Axis AXIS_OF_ROTATION, const int count, const int clockwise)
 {
     if (!source)
     {
@@ -511,48 +494,6 @@ int apply_move_from_spec(Cube* source, const MoveSpec* MOVE_SPEC)
 
         default: return 1; //if somehow an invalid move is provided
     }
-}
-
-int sync_cubie_positions(Cube* source)
-{
-    if (!source)
-    {
-        return 1;
-    }
-    Cubie* RESYNCED_CUBIES[3][3][3];
-    for (int i = 0; i < 3; i++)
-    {
-        for (int j = 0; j < 3; j++)
-        {
-            for (int k = 0; k < 3; k++)
-            {
-                Cubie* modifying = get_cubie_at_position(source, i-1, j-1, k-1);
-                const Vec3* pos = getCubiePosition(modifying);
-                if (!modifying || !pos)
-                {
-                    return 1;
-                }
-
-                //check for valid position
-                if (abs(pos -> x) >= 2 || abs(pos -> y) >= 2 || abs(pos -> z) >= 2)
-                {
-                    return 1;
-                }
-                RESYNCED_CUBIES[pos->x+1][pos->y+1][pos->z+1] = modifying;
-            }
-        }
-    }
-    for (int i = 0; i < 3; i++)
-    {
-        for (int j = 0; j < 3; j++)
-        {
-            for (int k = 0; k < 3; k++)
-            {
-                source -> GRAND_CUBE[i][j][k] = RESYNCED_CUBIES[i][j][k];
-            }
-        }
-    }
-    return 0;
 }
 
 int is_solved(const Cube* source)

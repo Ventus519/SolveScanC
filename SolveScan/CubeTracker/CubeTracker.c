@@ -37,7 +37,16 @@ int initialize_CubeTracker(CubeTracker* tracker, const char* file_path, const En
     switch (TRACKER_TO_ENABLE)
     {
         case BEGINNERS: break;
-        case CFOP: break;
+        case CFOP:
+            {
+                CFOPTracker* TRACK_CFOP = malloc(sizeof(CFOPTracker));
+                if (initialize_CFOPTracker(TRACK_CFOP))
+                {
+                    goto ENABLED_TRACKER_FAIL;
+                }
+                tracker -> tracker_CFOP = TRACK_CFOP;
+                break;
+            }
         case ROUX:
             {
                 RouxTracker* TRACK_ROUX = malloc(sizeof(RouxTracker));
@@ -46,6 +55,7 @@ int initialize_CubeTracker(CubeTracker* tracker, const char* file_path, const En
                     goto ENABLED_TRACKER_FAIL;
                 }
                 tracker -> tracker_ROUX = TRACK_ROUX;
+                break;
             }
         case ZZ: break;
     }
@@ -74,7 +84,7 @@ int is_invalid_CubeTracker(const CubeTracker* tracker)
     switch (tracker -> ENABLED)
     {
         case BEGINNERS: return 0;
-        case CFOP: return 0;
+        case CFOP: return (!tracker -> tracker_CFOP);
         case ROUX: return (!tracker -> tracker_ROUX);
         default: return 0;
     }
@@ -101,6 +111,30 @@ int track_scramble(CubeTracker* tracker, const MoveStack* SCRAMBLE_SEQUENCE)
     return 0;
 }
 
+int apply_move_to_subtracker_cubes(CubeTracker* tracker, const MoveSpec* MOVE_SPEC)
+{
+    if (is_invalid_CubeTracker(tracker) || !MOVE_SPEC)
+    {
+        return 1;
+    }
+
+    int apply_move_error_code = 0;
+
+    switch (tracker -> ENABLED)
+    {
+        case BEGINNERS: return 1;
+        case CFOP: apply_move_error_code = apply_move_from_spec(&tracker -> tracker_CFOP -> CUBE, MOVE_SPEC); break;
+        case ROUX: apply_move_error_code = apply_move_from_spec(&tracker -> tracker_ROUX -> CUBE, MOVE_SPEC); break;
+        case ZZ: return 1;
+    }
+    if (apply_move_error_code != 0)
+    {
+        return 1;
+    }
+
+    return 0;
+}
+
 int track_move_from_spec(CubeTracker* tracker, const MoveSpec* MOVE_SPEC)
 {
     if (is_invalid_CubeTracker(tracker) || !MOVE_SPEC)
@@ -108,7 +142,7 @@ int track_move_from_spec(CubeTracker* tracker, const MoveSpec* MOVE_SPEC)
         return 1;
     }
 
-    if (apply_move_from_spec(&tracker -> tracker_ROUX -> CUBE, MOVE_SPEC))
+    if (apply_move_to_subtracker_cubes(tracker, MOVE_SPEC))
     {
         return 1;
     }
@@ -130,7 +164,7 @@ int backtrack_moves(CubeTracker* tracker, const int count)
     {
         MoveSpec MOVE_TO_INVERT = pop_move_from_MoveStack(tracker -> p_MOVES_APPLIED);
         MOVE_TO_INVERT.clockwise = !MOVE_TO_INVERT.clockwise;
-        if (apply_move_from_spec(&tracker -> tracker_ROUX -> CUBE, &MOVE_TO_INVERT))
+        if (apply_move_to_subtracker_cubes(tracker, &MOVE_TO_INVERT))
         {
             return 1;
         }

@@ -27,7 +27,9 @@ set(CubeTrackerSRCS CubeTracker/RouxTracker.c
                     CubeTracker/MoveStack.c
                     CubeTracker/MoveStack.h
                     CubeTracker/CubeTracker.c
-                    CubeTracker/CubeTracker.h)
+                    CubeTracker/CubeTracker.h
+                    CubeTracker/CFOPTracker.c
+                    CubeTracker/CFOPTracker.h)
 
 add_library(RouxTracker SHARED ${CubeTrackerSRCS})
 

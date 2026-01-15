@@ -6,6 +6,7 @@
 #define SOLVESCAN_CUBETRACKER_H
 
 #include "RouxTracker.h"
+#include "CFOPTracker.h"
 
 typedef enum TRACKERS_ENABLED {
     BEGINNERS,
@@ -24,6 +25,7 @@ typedef struct CUBE_TRACKER {
 
     EnabledTrackers ENABLED;
     RouxTracker* tracker_ROUX;
+    CFOPTracker* tracker_CFOP;
 
     char* save_file_path;
 
@@ -35,6 +37,7 @@ int is_invalid_CubeTracker(const CubeTracker* tracker);
 
 int track_scramble(CubeTracker* tracker, const MoveStack* SCRAMBLE_SEQUENCE);
 
+int apply_move_to_subtracker_cubes(CubeTracker* tracker, const MoveSpec* MOVE_SPEC);
 int track_move_from_spec(CubeTracker* tracker, const MoveSpec* MOVE_SPEC);
 int backtrack_moves(CubeTracker* tracker, int count);
 
