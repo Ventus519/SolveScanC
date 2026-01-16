@@ -107,7 +107,27 @@ int track_scramble(CubeTracker* tracker, const MoveStack* SCRAMBLE_SEQUENCE)
         }
         moves_successful++;
     }
+    if (moves_successful == 0)
+    {
+        return 1;
+    }
 
+    return 0;
+}
+
+int is_subtracker_cube_solved(const CubeTracker* tracker)
+{
+    if (is_invalid_CubeTracker(tracker))
+    {
+        return 0;
+    }
+    switch (tracker -> ENABLED)
+    {
+        case BEGINNERS: break;
+        case CFOP: return is_solved(&tracker -> tracker_CFOP -> CUBE);
+        case ROUX: return is_solved(&tracker -> tracker_ROUX -> CUBE);
+        case ZZ: break;
+    }
     return 0;
 }
 
@@ -208,3 +228,30 @@ int append_to_reconstruction(CubeTracker* tracker, const char* string_entry)
     strcat(tracker -> reconstruction, string_entry);
     return 0;
 }
+
+CFOPMilestones get_current_CFOP_step(const CubeTracker* tracker)
+{
+    if (is_invalid_CubeTracker(tracker))
+    {
+        return CFOP_MILESTONE_NULL;
+    }
+    if (tracker -> ENABLED != CFOP)
+    {
+        return CFOP_MILESTONE_NULL;
+    }
+    return tracker -> tracker_CFOP -> STEP;
+}
+
+RouxMilestones get_current_ROUX_step(const CubeTracker* tracker)
+{
+    if (is_invalid_CubeTracker(tracker))
+    {
+        return ROUX_MILESTONE_NULL;
+    }
+    if (tracker -> ENABLED != ROUX)
+    {
+        return ROUX_MILESTONE_NULL;
+    }
+    return tracker -> tracker_ROUX -> STEP;
+}
+

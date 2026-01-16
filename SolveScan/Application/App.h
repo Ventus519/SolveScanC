@@ -11,11 +11,13 @@
 #include "gtk/gtk.h"
 
 typedef struct WIDGET_MAP{
-    GtkWidget* button_apply_default_moves;
+    GtkWidget* button_get_current_step;
     GtkWidget* button_apply_moves_from_text;
     GtkWidget* button_is_solved;
+    GtkWidget* button_apply_scramble_from_text;
 
     GtkWidget* textField_moves_to_apply;
+    GtkWidget* textField_scramble;
 
     GtkWidget* WIDGET_GRID;
 } WidgetLayout;

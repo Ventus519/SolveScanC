@@ -9,6 +9,43 @@
 #include <string.h>
 #include <errno.h>
 
+static int set_face_colors(Cube* source, const Faces FACE, const Colors COLOR)
+{
+    Axis FIXED_AXIS;
+    int fixed_value;
+
+    switch (FACE)
+    {
+        case FACE_FRONT: FIXED_AXIS = AXIS_Z; fixed_value = 1; break;
+        case FACE_UP: FIXED_AXIS = AXIS_Y; fixed_value = 1; break;
+        case FACE_RIGHT: FIXED_AXIS = AXIS_X; fixed_value = 1; break;
+        case FACE_BACK: FIXED_AXIS = AXIS_Z; fixed_value = -1; break;
+        case FACE_DOWN: FIXED_AXIS = AXIS_Y; fixed_value = -1; break;
+        case FACE_LEFT: FIXED_AXIS = AXIS_X; fixed_value = -1; break;
+        default: return 1;
+    }
+
+    for (int i = -1; i < 2; i++)
+    {
+        for (int j = -1; j < 2; j++)
+        {
+            Cubie* modifying;
+            switch (FIXED_AXIS)
+            {
+                case AXIS_Z: modifying = get_cubie_at_position(source, i, j, fixed_value); break;
+                case AXIS_Y: modifying = get_cubie_at_position(source, i, fixed_value, j); break;
+                case AXIS_X: modifying = get_cubie_at_position(source, fixed_value, i, j); break;
+                default: return 1;
+            }
+            if (!modifying)
+            {
+                return 1;
+            }
+            modifying -> FACE_COLORS[FACE] = COLOR;
+        }
+    }
+    return 0;
+}
 
 
 int initialize_cube(Cube* cube)
@@ -46,57 +83,30 @@ int initialize_cube(Cube* cube)
     return 0;
 
     ERROR_FAIL:
-        for (int i = 0; i < 3; i++)
-        {
-            for (int j = 0; j < 3; j++)
-            {
-                for (int k = 0; k < 3; k++)
-                {
-                    freeCubie(cube -> GRAND_CUBE[i][j][k]);
-                }
-            }
-        }
+        free_cube(cube);
         return 1;
 
 }
 
-int set_face_colors(Cube* source, const Faces FACE, const Colors COLOR)
+void free_cube(Cube* cube)
 {
-    Axis FIXED_AXIS;
-    int fixed_value;
-
-    switch (FACE)
+    if (!cube)
     {
-        case FACE_FRONT: FIXED_AXIS = AXIS_Z; fixed_value = 1; break;
-        case FACE_UP: FIXED_AXIS = AXIS_Y; fixed_value = 1; break;
-        case FACE_RIGHT: FIXED_AXIS = AXIS_X; fixed_value = 1; break;
-        case FACE_BACK: FIXED_AXIS = AXIS_Z; fixed_value = -1; break;
-        case FACE_DOWN: FIXED_AXIS = AXIS_Y; fixed_value = -1; break;
-        case FACE_LEFT: FIXED_AXIS = AXIS_X; fixed_value = -1; break;
-        default: return 1;
+        return;
     }
-
-    for (int i = -1; i < 2; i++)
+    for (int i = 0; i < 3; i++)
     {
-        for (int j = -1; j < 2; j++)
+        for (int j = 0; j < 3; j++)
         {
-            Cubie* modifying;
-            switch (FIXED_AXIS)
+            for (int k = 0; k < 3; k++)
             {
-                case AXIS_Z: modifying = get_cubie_at_position(source, i, j, fixed_value); break;
-                case AXIS_Y: modifying = get_cubie_at_position(source, i, fixed_value, j); break;
-                case AXIS_X: modifying = get_cubie_at_position(source, fixed_value, i, j); break;
-                default: return 1;
+                freeCubie(cube -> GRAND_CUBE[i][j][k]);
             }
-            if (!modifying)
-            {
-                return 1;
-            }
-            modifying -> FACE_COLORS[FACE] = COLOR;
         }
     }
-    return 0;
+    //The cube pointer itself is never freed since it is never allocated in this file
 }
+
 
 Colors get_face_center_color(const Cube* source, const Faces FACE)
 {
@@ -564,15 +574,15 @@ int is_solved(const Cube* source)
     return 1;
 }
 
-int parse_move(char** p_MOVE_SPEC, MoveSpec* MOVE_SPEC_DEST)
+int parse_move(const char* MOVE_STR, MoveSpec* MOVE_SPEC_DEST)
 {
-    if (!p_MOVE_SPEC || !MOVE_SPEC_DEST)
+    if (!MOVE_STR || !MOVE_SPEC_DEST)
     {
         return 1;
     }
 
 
-    switch (*p_MOVE_SPEC[0])
+    switch (MOVE_STR[0])
     {
         case 'F': MOVE_SPEC_DEST -> MOVE = MOVE_FRONT; break;
         case 'U': MOVE_SPEC_DEST -> MOVE = MOVE_UP; break;
@@ -602,7 +612,7 @@ int parse_move(char** p_MOVE_SPEC, MoveSpec* MOVE_SPEC_DEST)
     errno = 0;
     const char query = '\'';
     char* end;
-    const char* p_prime = strchr(*p_MOVE_SPEC, query);
+    const char* p_prime = strchr(MOVE_STR, query);
 
 
     if (p_prime == NULL)
@@ -611,13 +621,13 @@ int parse_move(char** p_MOVE_SPEC, MoveSpec* MOVE_SPEC_DEST)
     }
     else
     {
-        if (p_prime != strrchr(*p_MOVE_SPEC, query))
+        if (p_prime != strrchr(MOVE_STR, query))
         {
             return 1;
         }
         MOVE_SPEC_DEST -> clockwise = 0;
     }
-    const int test = strtol(*p_MOVE_SPEC + 1, &end, 10);
+    const int test = strtol(MOVE_STR + 1, &end, 10);
     if (errno == ERANGE)
     {
         return 1;
@@ -632,10 +642,10 @@ int parse_move(char** p_MOVE_SPEC, MoveSpec* MOVE_SPEC_DEST)
     }
 
 
-    for (int i = 1; i < strlen(*p_MOVE_SPEC); i++)
+    for (int i = 1; i < strlen(MOVE_STR); i++)
     {
-        char* ENSURE_ONLY_ONE_MOVE = *p_MOVE_SPEC + i;
-        if (!parse_move(&ENSURE_ONLY_ONE_MOVE, MOVE_SPEC_DEST))
+        const char* ENSURE_ONLY_ONE_MOVE = MOVE_STR + i;
+        if (!parse_move(ENSURE_ONLY_ONE_MOVE, MOVE_SPEC_DEST))
         {
             return 1;
         }
@@ -645,20 +655,20 @@ int parse_move(char** p_MOVE_SPEC, MoveSpec* MOVE_SPEC_DEST)
 }
 
 
-int apply_move_from_formatted_str(Cube* source, char** p_MOVE_SPEC)
+int apply_move_from_formatted_str(Cube* source, const char* MOVE_SPEC)
 {
-    if (!source || !p_MOVE_SPEC)
+    if (!source || !MOVE_SPEC)
     {
         return 1;
     }
 
     MoveSpec MOVE;
-    if (parse_move(p_MOVE_SPEC, &MOVE))
+    if (parse_move(MOVE_SPEC, &MOVE))
     {
         return 1;
     }
 
-    return apply_move_from_spec(source, &MOVE);;
+    return apply_move_from_spec(source, &MOVE);
 }
 
 void print_cube(const Cube* source)

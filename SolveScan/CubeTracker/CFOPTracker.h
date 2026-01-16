@@ -22,7 +22,7 @@ typedef enum CFOPMilestones
     CFOP_OLL,
     CFOP_PLL,
     CFOP_SOLVED,
-    CFOP_MILESTONE_NULL
+    CFOP_MILESTONE_NULL = -1
 } CFOPMilestones;
 
 typedef struct CFOP_TRACKER {
@@ -50,5 +50,7 @@ int is_f2l_pair_complete(const CFOPTracker* tracker, Faces FACE_FRONT_OR_FACE_BA
 int update_completed_f2l_pairs(CFOPTracker* tracker);
 
 int is_oll_complete(const CFOPTracker* tracker);
+
+int update_current_step_CFOP(CFOPTracker* tracker);
 
 #endif //SOLVESCAN_CFOPTRACKER_H

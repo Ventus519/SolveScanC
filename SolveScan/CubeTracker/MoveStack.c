@@ -52,7 +52,11 @@ int push_move_to_MoveStack(MoveStack* stack, const MoveSpec* MOVE)
             return 1;
         }
     }
-    stack -> MOVE_SEQUENCE[stack -> MOVE_SEQUENCE_LENGTH] = *MOVE;
+    MoveSpec* COPIED_MOVE = malloc(sizeof(MoveSpec));
+    stack -> MOVE_SEQUENCE[stack -> MOVE_SEQUENCE_LENGTH] = *COPIED_MOVE;
+    stack -> MOVE_SEQUENCE[stack -> MOVE_SEQUENCE_LENGTH].MOVE = MOVE -> MOVE;
+    stack -> MOVE_SEQUENCE[stack -> MOVE_SEQUENCE_LENGTH].count = MOVE -> count;
+    stack -> MOVE_SEQUENCE[stack -> MOVE_SEQUENCE_LENGTH].clockwise = MOVE -> clockwise;
     stack -> MOVE_SEQUENCE_LENGTH++;
     return 0;
 }

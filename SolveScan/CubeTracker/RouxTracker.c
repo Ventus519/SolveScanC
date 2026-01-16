@@ -40,7 +40,7 @@ void free_RouxTracker(RouxTracker* tracker)
 
 int is_ROUX_block_complete(const RouxTracker* tracker, const Faces FACE_LEFT_OR_FACE_RIGHT)
 {
-    if (is_invalid_RouxTracker(tracker))
+    if (!tracker)
     {
         return 0;
     }
@@ -122,7 +122,7 @@ int is_second_block_complete(const RouxTracker* tracker)
 
 int last_layer_corners_aligned(const RouxTracker* tracker)
 {
-    if (is_invalid_RouxTracker(tracker))
+    if (!tracker)
     {
         return 0;
     }
@@ -156,7 +156,7 @@ int last_layer_corners_aligned(const RouxTracker* tracker)
     {
         return 0;
     }
-    if (UFL_CORNER -> FACE_COLORS[FACE_UP] != UR_BASE_COLOR && UFR_CORNER -> FACE_COLORS[FACE_UP] != UL_BASE_COLOR)
+    if (UFL_CORNER -> FACE_COLORS[FACE_UP] != UR_BASE_COLOR && UFL_CORNER -> FACE_COLORS[FACE_UP] != UL_BASE_COLOR)
     {
         return 0;
     }
@@ -178,9 +178,9 @@ int last_layer_corners_aligned(const RouxTracker* tracker)
     return ((R_COLOR_DIFFERENCE == L_COLOR_DIFFERENCE) && (F_COLOR_DIFFERENCE == B_COLOR_DIFFERENCE));
 }
 
-int update_current_step(RouxTracker* tracker, const int continue_scramble, const int continue_inspect)
+int update_current_step_ROUX(RouxTracker* tracker, const int continue_scramble, const int continue_inspect)
 {
-    if (is_invalid_RouxTracker(tracker))
+    if (!tracker)
     {
         return 1;
     }
@@ -230,7 +230,7 @@ int update_current_step(RouxTracker* tracker, const int continue_scramble, const
 
 int track_applied_move_spec_roux(RouxTracker* tracker, MoveSpec* MOVE_TO_APPLY)
 {
-    if (is_invalid_RouxTracker(tracker) || !MOVE_TO_APPLY)
+    if (!tracker || !MOVE_TO_APPLY)
     {
         return 1;
     }
@@ -245,7 +245,7 @@ int track_applied_move_spec_roux(RouxTracker* tracker, MoveSpec* MOVE_TO_APPLY)
 
 void print_tracker_state(const RouxTracker* tracker)
 {
-    if (is_invalid_RouxTracker(tracker))
+    if (!tracker)
     {
         return;
     }
@@ -262,13 +262,4 @@ void print_tracker_state(const RouxTracker* tracker)
         case ROUX_SOLVED: printf("SOLVED\n"); break;
         case ROUX_MILESTONE_NULL: printf("NULL\n"); break;
     }
-}
-
-int is_invalid_RouxTracker(const RouxTracker* tracker)
-{
-    if (!tracker)
-    {
-        return 1;
-    }
-    return 0;
 }

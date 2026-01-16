@@ -3,6 +3,9 @@
 //
 
 #include "App.h"
+
+#include <stdnoreturn.h>
+
 #include "../Cube3/Cube3.h"
 #include "../CubeTracker/CubeTracker.h"
 
@@ -15,7 +18,60 @@ char* MOVES_DEFAULT = "R";
 
 WidgetLayout layout;
 
-static void on_button_apply_default_moves (gpointer user_data)
+
+static void on_button_apply_scramble_from_text (gpointer user_data)
+{
+    if (is_invalid_CubeTracker(&TRACKER) || !layout.textField_scramble)
+    {
+        g_print("SRM SOURCE FOUND (INVALID CUBE TRACKER :: APPLY SCRAMBLE TEXT)\n");
+        return;
+    }
+    GtkEntryBuffer* SCRAMBLE_TO_APPLY = gtk_entry_get_buffer(GTK_ENTRY(layout.textField_scramble));
+    if (!SCRAMBLE_TO_APPLY)
+    {
+        g_print("NO SCRAMBLE");
+    }
+    char* scramble_moves = gtk_entry_buffer_get_text(SCRAMBLE_TO_APPLY);
+    MoveStack* SCRAMBLE_SPEC = create_MoveStack();
+    if (!SCRAMBLE_SPEC)
+    {
+        g_print("NO SCRAMBLE SPACE ALLOCATED");
+        return;
+    }
+
+    int begin_index = 0, end_index = 0;
+    for (int i = 0; i <= strlen(scramble_moves); i++)
+    {
+        if (scramble_moves[i] == ' ' || scramble_moves[i] == '\0')
+        {
+            const char stored = scramble_moves[i];
+            end_index = i;
+            scramble_moves[i] = '\0';
+            MoveSpec MOVE_SPEC;
+            if (parse_move(scramble_moves + begin_index, &MOVE_SPEC))
+            {
+                g_print("COULD NOT PARSE MOVE");
+                return;
+            }
+            if (push_move_to_MoveStack(SCRAMBLE_SPEC, &MOVE_SPEC))
+            {
+                g_print("COULD NOT PUSH MOVE TO SCRAMBLE");
+                return;
+            }
+            scramble_moves[i] = stored;
+            begin_index = end_index + 1;
+        }
+    }
+    if (track_scramble(&TRACKER, SCRAMBLE_SPEC))
+    {
+        g_print("COULD NOT TRACK SCRAMBLE");
+        return;
+    }
+    g_print("TRACKED SCRAMBLE\n");
+    g_print("Current reconstruction: %s\n", MoveStack_to_str(TRACKER.p_MOVES_APPLIED));
+}
+
+static void on_button_get_current_step (gpointer user_data)
 {
     if (is_invalid_CubeTracker(&TRACKER))
     {
@@ -23,15 +79,48 @@ static void on_button_apply_default_moves (gpointer user_data)
         initialize_CubeTracker(&TRACKER, "../data.txt", ROUX);
         return;
     }
-    MoveSpec MOVE_TO_APPLY;
-    if (parse_move(&MOVES_DEFAULT, &MOVE_TO_APPLY))
+    switch (TRACKER.ENABLED)
     {
-        g_print("COULD NOT APPLY MOVES: R\n");
-        return;
+        case BEGINNERS: return;
+        case CFOP:
+        {
+            const CFOPMilestones CURRENT_STEP = get_current_CFOP_step(&TRACKER);
+            g_print("CURRENT STEP: ");
+            switch (CURRENT_STEP)
+            {
+                case CFOP_SCRAMBLE: g_print("(CFOP) SCRAMBLE\n"); break;
+                case CFOP_INSPECT: g_print("(CFOP) INSPECT\n"); break;
+                case CFOP_CROSS: g_print("(CFOP) CROSS\n"); break;
+                case CFOP_F2L_1: g_print("(CFOP F2L) Pair 1\n"); break;
+                case CFOP_F2L_2: g_print("(CFOP F2L) Pair 2\n"); break;
+                case CFOP_F2L_3: g_print("(CFOP F2L) Pair 3\n"); break;
+                case CFOP_F2L: g_print("(CFOP F2L) Pair 4\n"); break;
+                case CFOP_OLL: g_print("(CFOP) OLL\n"); break;
+                case CFOP_PLL: g_print("(CFOP) PLL\n"); break;
+                case CFOP_SOLVED: g_print("(CFOP) SOLVED\n"); break;
+                case CFOP_MILESTONE_NULL: g_print("INVALID CFOP STEP\n"); break;
+            }
+            break;
+        }
+        case ROUX:
+        {
+            const RouxMilestones CURRENT_STEP = get_current_ROUX_step(&TRACKER);
+            g_print("CURRENT STEP: ");
+            switch (CURRENT_STEP)
+            {
+                case ROUX_SCRAMBLE: g_print("(ROUX) SCRAMBLE\n"); break;
+                case ROUX_INSPECT: g_print("(ROUX) INSPECT\n"); break;
+                case ROUX_FIRST_BLOCK: g_print("(ROUX) FB\n"); break;
+                case ROUX_SECOND_BLOCK: g_print("(ROUX) SB\n"); break;
+                case ROUX_LAST_LAYER_CORNERS: g_print("(ROUX) CMLL\n"); break;
+                case ROUX_LAST_SIX_EDGES: g_print("(ROUX) L6E\n"); break;
+                case ROUX_SOLVED: g_print("(ROUX) SOLVED\n"); break;
+                case ROUX_MILESTONE_NULL: g_print("INVALID ROUX STEP\n"); break;
+            }
+            break;
+        }
+        case ZZ: return;
     }
-    track_move_from_spec(&TRACKER, &MOVE_TO_APPLY);
-    g_print("Applied moves: %s\n", MOVES_DEFAULT);
-    g_print("Current reconstruction: %s\n", MoveStack_to_str(TRACKER.p_MOVES_APPLIED));
 }
 
 static void on_button_is_solved (gpointer user_data)
@@ -41,7 +130,7 @@ static void on_button_is_solved (gpointer user_data)
         g_print("SRM SOURCE FOUND (INVALID CUBE TRACKER :: IS SOLVED)\n");
         return;
     }
-    if (is_solved(&TRACKER.tracker_ROUX -> CUBE))
+    if (is_subtracker_cube_solved(&TRACKER))
     {
         g_print("THE CUBE IS SOLVED\n");
     }
@@ -67,7 +156,7 @@ static void on_button_apply_moves_from_text (gpointer user_data)
     }
     char* moves_to_apply = gtk_entry_buffer_get_text(MOVES_TO_APPLY);
     MoveSpec MOVE_TO_APPLY;
-    if (parse_move(&moves_to_apply, &MOVE_TO_APPLY))
+    if (parse_move(moves_to_apply, &MOVE_TO_APPLY))
     {
         g_print("COULD NOT PARSE MOVE (PROBABLY TOO LONG)");
         return;
@@ -86,32 +175,37 @@ static void on_button_apply_moves_from_text (gpointer user_data)
 
 static void link_button_handlers(WidgetLayout* p_layout)
 {
-    g_signal_connect(p_layout -> button_apply_default_moves, "clicked", G_CALLBACK (on_button_apply_default_moves), NULL);
+    g_signal_connect(p_layout -> button_get_current_step, "clicked", G_CALLBACK (on_button_get_current_step), NULL);
     g_signal_connect(p_layout -> button_is_solved, "clicked", G_CALLBACK (on_button_is_solved), NULL);
     g_signal_connect(p_layout -> button_apply_moves_from_text, "clicked", G_CALLBACK (on_button_apply_moves_from_text), NULL);
+    g_signal_connect(p_layout -> button_apply_scramble_from_text, "clicked", G_CALLBACK (on_button_apply_scramble_from_text), NULL);
 }
 
 static void create_button_layout_controls(GtkWindow* APP_WINDOW, WidgetLayout* p_layout)
 {
-    p_layout -> button_apply_default_moves = gtk_button_new_with_label("APPLY: R U R' U'");
+    p_layout -> button_get_current_step = gtk_button_new_with_label("GET CURRENT STEP");
     p_layout -> button_is_solved = gtk_button_new_with_label("IS SOLVED?");
     p_layout -> button_apply_moves_from_text = gtk_button_new_with_label("APPLY MOVES");
+    p_layout -> button_apply_scramble_from_text = gtk_button_new_with_label("APPLY SCRAMBLE");
 
     p_layout -> textField_moves_to_apply = gtk_entry_new();
+    p_layout -> textField_scramble = gtk_entry_new();
 
     p_layout -> WIDGET_GRID = gtk_grid_new();
 
     gtk_window_set_child (APP_WINDOW, p_layout -> WIDGET_GRID);
 
-    gtk_grid_attach(GTK_GRID(p_layout -> WIDGET_GRID), p_layout -> button_is_solved, 3, 2, 1, 1);
+    gtk_grid_attach(GTK_GRID(p_layout -> WIDGET_GRID), p_layout -> button_is_solved, 3, 3, 1, 1);
     gtk_grid_attach(GTK_GRID(p_layout -> WIDGET_GRID), p_layout -> textField_moves_to_apply, 0, 1, 2, 1);
+    gtk_grid_attach(GTK_GRID(p_layout -> WIDGET_GRID), p_layout -> textField_scramble, 0, 2, 2, 1);
+    gtk_grid_attach(GTK_GRID(p_layout -> WIDGET_GRID), p_layout -> button_apply_scramble_from_text, 3, 2, 1, 1);
     gtk_grid_attach(GTK_GRID(p_layout -> WIDGET_GRID), p_layout -> button_apply_moves_from_text, 3, 1, 1, 1);
-    gtk_grid_attach(GTK_GRID(p_layout -> WIDGET_GRID), p_layout -> button_apply_default_moves, 0, 0, 1, 1);
+    gtk_grid_attach(GTK_GRID(p_layout -> WIDGET_GRID), p_layout -> button_get_current_step, 0, 0, 1, 1);
 }
 
 void activate (GApplication *g_app)
 {
-    initialize_CubeTracker(&TRACKER, "../data.txt", ROUX);
+    initialize_CubeTracker(&TRACKER, "../data.txt", CFOP);
 
 
     GtkApplication* app = GTK_APPLICATION (g_app);
