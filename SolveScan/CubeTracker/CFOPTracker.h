@@ -51,6 +51,6 @@ int update_completed_f2l_pairs(CFOPTracker* tracker);
 
 int is_oll_complete(const CFOPTracker* tracker);
 
-int update_current_step_CFOP(CFOPTracker* tracker);
+int update_current_step_CFOP(CFOPTracker* tracker, int continue_scramble, int continue_inspect);
 
 #endif //SOLVESCAN_CFOPTRACKER_H

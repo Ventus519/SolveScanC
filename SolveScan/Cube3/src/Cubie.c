@@ -245,6 +245,19 @@ char* MoveSpec_to_str(const MoveSpec* MOVE_SPEC)
     return result;
 }
 
+int isMoveSpecRotation(const MoveSpec* MOVE_SPEC)
+{
+    if (!MOVE_SPEC)
+    {
+        return 0;
+    }
+    if (MOVE_SPEC -> MOVE < ROT_Z || MOVE_SPEC -> MOVE > MOVE_NULL)
+    {
+        return 0;
+    }
+    return 1;
+}
+
 int isSameCubie(const Cubie* source, const Cubie* other)
 {
     if (!source || !other)

@@ -107,12 +107,12 @@ int track_scramble(CubeTracker* tracker, const MoveStack* SCRAMBLE_SEQUENCE)
         }
         moves_successful++;
     }
-    if (moves_successful == 0)
+    if (moves_successful != SCRAMBLE_SEQUENCE -> MOVE_SEQUENCE_LENGTH)
     {
         return 1;
     }
 
-    return 0;
+    return update_current_step(tracker, 0, 1);
 }
 
 int is_subtracker_cube_solved(const CubeTracker* tracker)
@@ -128,6 +128,32 @@ int is_subtracker_cube_solved(const CubeTracker* tracker)
         case ROUX: return is_solved(&tracker -> tracker_ROUX -> CUBE);
         case ZZ: break;
     }
+    return 0;
+}
+
+int apply_moves_to_subtracker_cubes(CubeTracker* tracker, const MoveStack* MOVES)
+{
+    if (is_invalid_CubeTracker(tracker) || !MOVES)
+    {
+        return 1;
+    }
+    int moves_successful = 0;
+    for (int i = 0; i < MOVES -> MOVE_SEQUENCE_LENGTH; i++)
+    {
+        if (track_move_from_spec(tracker, &MOVES -> MOVE_SEQUENCE[i]))
+        {
+            (void) backtrack_moves(tracker, moves_successful);
+            return 1;
+        }
+        moves_successful++;
+    }
+    if (moves_successful != MOVES -> MOVE_SEQUENCE_LENGTH)
+    {
+        return 1;
+    }
+
+    return 0;
+
     return 0;
 }
 
@@ -170,8 +196,40 @@ int track_move_from_spec(CubeTracker* tracker, const MoveSpec* MOVE_SPEC)
     {
         return 1;
     }
+    int continue_inspect = 0;
+    switch (tracker -> ENABLED)
+    {
+        case BEGINNERS: break;
+        case CFOP:
+            {
+                const CFOPMilestones CURRENT_STEP = get_current_CFOP_step(tracker);
+                if (CURRENT_STEP == CFOP_SCRAMBLE)
+                {
+                    return 0;
+                }
+                if (CURRENT_STEP == CFOP_INSPECT && isMoveSpecRotation(MOVE_SPEC))
+                {
+                    continue_inspect = 1;
+                }
+                break;
+            }
+        case ROUX:
+            {
+                const RouxMilestones CURRENT_STEP = get_current_ROUX_step(tracker);
+                if (CURRENT_STEP == ROUX_SCRAMBLE)
+                {
+                    return 0;
+                }
+                if (CURRENT_STEP == ROUX_INSPECT && isMoveSpecRotation(MOVE_SPEC))
+                {
+                    continue_inspect = 1;
+                }
+                break;
+            }
+        case ZZ: break;
+    }
 
-    return 0;
+    return update_current_step(tracker, 0, continue_inspect);
 }
 
 int backtrack_moves(CubeTracker* tracker, const int count)
@@ -227,6 +285,22 @@ int append_to_reconstruction(CubeTracker* tracker, const char* string_entry)
     }
     strcat(tracker -> reconstruction, string_entry);
     return 0;
+}
+
+int update_current_step(CubeTracker* tracker, const int continue_scramble, const int continue_inspect)
+{
+    if (is_invalid_CubeTracker(tracker))
+    {
+        return 1;
+    }
+    switch (tracker -> ENABLED)
+    {
+        case BEGINNERS: return 1;
+        case CFOP: return update_current_step_CFOP(tracker -> tracker_CFOP, continue_scramble, continue_inspect);
+        case ROUX: return update_current_step_ROUX(tracker -> tracker_ROUX, continue_scramble, continue_inspect);
+        case ZZ: return 1;
+        default: return 1;
+    }
 }
 
 CFOPMilestones get_current_CFOP_step(const CubeTracker* tracker)

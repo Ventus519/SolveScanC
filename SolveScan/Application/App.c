@@ -32,41 +32,17 @@ static void on_button_apply_scramble_from_text (gpointer user_data)
         g_print("NO SCRAMBLE");
     }
     char* scramble_moves = gtk_entry_buffer_get_text(SCRAMBLE_TO_APPLY);
-    MoveStack* SCRAMBLE_SPEC = create_MoveStack();
+    MoveStack* SCRAMBLE_SPEC = move_str_to_MoveStack(scramble_moves);
     if (!SCRAMBLE_SPEC)
     {
-        g_print("NO SCRAMBLE SPACE ALLOCATED");
         return;
-    }
-
-    int begin_index = 0, end_index = 0;
-    for (int i = 0; i <= strlen(scramble_moves); i++)
-    {
-        if (scramble_moves[i] == ' ' || scramble_moves[i] == '\0')
-        {
-            const char stored = scramble_moves[i];
-            end_index = i;
-            scramble_moves[i] = '\0';
-            MoveSpec MOVE_SPEC;
-            if (parse_move(scramble_moves + begin_index, &MOVE_SPEC))
-            {
-                g_print("COULD NOT PARSE MOVE");
-                return;
-            }
-            if (push_move_to_MoveStack(SCRAMBLE_SPEC, &MOVE_SPEC))
-            {
-                g_print("COULD NOT PUSH MOVE TO SCRAMBLE");
-                return;
-            }
-            scramble_moves[i] = stored;
-            begin_index = end_index + 1;
-        }
     }
     if (track_scramble(&TRACKER, SCRAMBLE_SPEC))
     {
         g_print("COULD NOT TRACK SCRAMBLE");
         return;
     }
+    free_MoveStack(SCRAMBLE_SPEC);
     g_print("TRACKED SCRAMBLE\n");
     g_print("Current reconstruction: %s\n", MoveStack_to_str(TRACKER.p_MOVES_APPLIED));
 }

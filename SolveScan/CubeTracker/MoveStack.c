@@ -170,6 +170,50 @@ char* MoveStack_to_str(MoveStack* stack)
         strcat(result_str, " ");
     }
 
-
     return result_str;
+}
+
+MoveStack* move_str_to_MoveStack(char* move_str)
+{
+    if (!move_str)
+    {
+        return NULL;
+    }
+    MoveStack* stack = create_MoveStack();
+    if (!stack)
+    {
+        return NULL;
+    }
+
+    size_t begin_index = 0;
+    size_t end_index = 0;
+    for (size_t i = 0; ; i++)
+    {
+        if (move_str[i] == ' ' || move_str[i] == '\0')
+        {
+            const char stored = move_str[i];
+            end_index = i;
+            move_str[end_index] = '\0';
+            MoveSpec MOVE_SPEC;
+            if (parse_move(move_str + begin_index, &MOVE_SPEC))
+            {
+                move_str[end_index] = stored;
+                free_MoveStack(stack);
+                return NULL;
+            }
+            if (push_move_to_MoveStack(stack, &MOVE_SPEC))
+            {
+                move_str[end_index] = stored;
+                free_MoveStack(stack);
+                return NULL;
+            }
+            move_str[end_index] = stored;
+            begin_index = end_index + 1;
+            if (stored == '\0')
+            {
+                break;
+            }
+        }
+    }
+    return stack;
 }

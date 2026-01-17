@@ -20,6 +20,7 @@ int push_move_to_MoveStack(MoveStack* stack, const MoveSpec* MOVE);
 int resize_MoveStack(MoveStack* stack);
 MoveSpec pop_move_from_MoveStack(MoveStack* stack);
 char* MoveStack_to_str(MoveStack* stack);
+MoveStack* move_str_to_MoveStack(char* move_str);
 
 
 

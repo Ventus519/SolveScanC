@@ -191,3 +191,53 @@ int is_oll_complete(const CFOPTracker* tracker)
     }
     return 1;
 }
+
+int update_current_step_CFOP(CFOPTracker* tracker, const int continue_scramble, const int continue_inspect)
+{
+    if (!tracker)
+    {
+        return 1;
+    }
+    if (tracker -> STEP == CFOP_MILESTONE_NULL)
+    {
+        return 1;
+    }
+    if (continue_scramble)
+    {
+        tracker -> STEP = CFOP_SCRAMBLE;
+        return 0;
+    }
+    if (continue_inspect)
+    {
+        tracker -> STEP = CFOP_INSPECT;
+        return 0;
+    }
+    tracker -> STEP = CFOP_CROSS;
+    if (is_cross_complete(tracker))
+    {
+        tracker -> STEP = CFOP_F2L_1;
+    }
+    if (update_completed_f2l_pairs(tracker))
+    {
+        return 1;
+    }
+    const int completed_pairs = count_complete_f2l_pairs(tracker);
+    switch (completed_pairs)
+    {
+        case 0: tracker -> STEP = CFOP_F2L_1; break;
+        case 1: tracker -> STEP = CFOP_F2L_2; break;
+        case 2: tracker -> STEP = CFOP_F2L_3; break;
+        case 3: tracker -> STEP = CFOP_F2L; break;
+        case 4: tracker -> STEP = CFOP_OLL; break;
+        default: return 1;
+    }
+    if (tracker -> STEP == CFOP_OLL && is_oll_complete(tracker))
+    {
+        tracker -> STEP = CFOP_PLL;
+    }
+    if (is_solved(&tracker -> CUBE))
+    {
+        tracker -> STEP = CFOP_SOLVED;
+    }
+    return 0;
+}

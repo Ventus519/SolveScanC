@@ -210,6 +210,15 @@ int applyRotation(Cubie* source, const MoveSpec* MOVE_SPEC);
  **/
 char* MoveSpec_to_str(const MoveSpec* MOVE_SPEC);
 
+/**
+ * Determines if a given Move Specification is a pure rotation about some axis of rotation when applied to a larger Cube.
+ * This is useful for determining if the inspection step of a solve has ended as the inspection step only allows rotations before actual moves.
+ * MOVE_NULL counts as a rotation, since it is the same as doing nothing to the Cube (which is the same as a rotation applied 4 times).
+ *
+ * @param MOVE_SPEC The move specification to check
+ * @return Boolean: 1 if the move results in a pure rotation, 0 if otherwise (including NULL pointer)
+ */
+int isMoveSpecRotation(const MoveSpec* MOVE_SPEC);
 
 /**
  * Determines if two Cubies convey the same information determined by their members.
