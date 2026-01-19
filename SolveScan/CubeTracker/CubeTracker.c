@@ -131,7 +131,7 @@ int is_subtracker_cube_solved(const CubeTracker* tracker)
     return 0;
 }
 
-int apply_moves_to_subtracker_cubes(CubeTracker* tracker, const MoveStack* MOVES)
+int track_MoveStack(CubeTracker* tracker, const MoveStack* MOVES)
 {
     if (is_invalid_CubeTracker(tracker) || !MOVES)
     {

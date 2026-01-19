@@ -366,7 +366,7 @@ static int slice_s(Cube* source, const int count, const int clockwise)
     }
 
     MoveSpec S_SLICE_SPEC;
-    S_SLICE_SPEC.MOVE = SLICE_SIDE;
+    S_SLICE_SPEC.MOVE = MOVE_FRONT;
     S_SLICE_SPEC.count = count;
     S_SLICE_SPEC.clockwise = clockwise;
 
@@ -392,7 +392,7 @@ static int slice_e(Cube* source, const int count, const int clockwise)
     }
 
     MoveSpec E_SLICE_SPEC;
-    E_SLICE_SPEC.MOVE = SLICE_EQUATOR;
+    E_SLICE_SPEC.MOVE = MOVE_DOWN;
     E_SLICE_SPEC.count = count;
     E_SLICE_SPEC.clockwise = clockwise;
 
@@ -418,7 +418,7 @@ static int slice_m(Cube* source, const int count, const int clockwise)
     }
 
     MoveSpec M_SLICE_SPEC;
-    M_SLICE_SPEC.MOVE = SLICE_MIDDLE;
+    M_SLICE_SPEC.MOVE = MOVE_LEFT;
     M_SLICE_SPEC.count = count;
     M_SLICE_SPEC.clockwise = clockwise;
 

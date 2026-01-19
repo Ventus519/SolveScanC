@@ -8,6 +8,23 @@
 #include <stdlib.h>
 #include "../Cube3/Cube3.h"
 
+
+/**
+ * @struct MOVE_STACK
+ *
+ * Represents a sequence of moves that can be applied to a 3x3x3 Rubik's Cube.
+ *
+ * The MOVE_SEQUENCE member is a heap-allocated, dynamic array of MoveSpec structures. Since this is heap-allocated, it
+ * is recommended to use create_MoveStack(); when using a MoveStack to represent a move sequence. It is not recommended
+ * to create a MoveStack on stack memory.
+ *
+ * If there isn't enough space allocated to push a new move onto the stack, the stack reallocates double its current
+ * maximum length.
+ *
+ * If there is a preexisting move string, move_str_to_MoveStack(char* move_str) can be used to create a MoveStack with
+ * those moves already loaded. The provided move string must be completely expanded using standard WCA move notation.
+ * For more information, see move_str_to_MoveStack(char* move_str).
+ **/
 typedef struct MOVE_STACK {
     MoveSpec* MOVE_SEQUENCE;
     size_t MOVE_SEQUENCE_LENGTH;

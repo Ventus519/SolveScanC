@@ -150,7 +150,7 @@ int update_completed_f2l_pairs(CFOPTracker* tracker)
     {
         return 1;
     }
-
+    tracker -> f2l_pairs_completed = 0;
     if (is_f2l_pair_complete(tracker, FACE_FRONT, FACE_LEFT))
     {
         tracker -> f2l_pairs_completed |= 0x01;

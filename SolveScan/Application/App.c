@@ -45,6 +45,10 @@ static void on_button_apply_scramble_from_text (gpointer user_data)
     free_MoveStack(SCRAMBLE_SPEC);
     g_print("TRACKED SCRAMBLE\n");
     g_print("Current reconstruction: %s\n", MoveStack_to_str(TRACKER.p_MOVES_APPLIED));
+
+
+    gtk_widget_set_visible (GTK_WIDGET (layout.button_apply_scramble_from_text), FALSE);
+    gtk_widget_set_visible (GTK_WIDGET (layout.textField_scramble), FALSE);
 }
 
 static void on_button_get_current_step (gpointer user_data)
@@ -131,15 +135,20 @@ static void on_button_apply_moves_from_text (gpointer user_data)
         return;
     }
     char* moves_to_apply = gtk_entry_buffer_get_text(MOVES_TO_APPLY);
-    MoveSpec MOVE_TO_APPLY;
-    if (parse_move(moves_to_apply, &MOVE_TO_APPLY))
+    MoveStack* APPLIED_MOVES = move_str_to_MoveStack(moves_to_apply);
+    if (!MOVES_TO_APPLY)
     {
-        g_print("COULD NOT PARSE MOVE (PROBABLY TOO LONG)");
+        g_print("NO MOVES WERE PROVIDED");
         return;
     }
-    track_move_from_spec(&TRACKER, &MOVE_TO_APPLY);
+    if (track_MoveStack(&TRACKER, APPLIED_MOVES))
+    {
+        g_print("NO MOVES WERE APPLIED");
+        free_MoveStack(APPLIED_MOVES);
+        return;
+    }
 
-
+    free_MoveStack(APPLIED_MOVES);
     g_print("APPLIED MOVES: %s\n", moves_to_apply);
     g_print("Current reconstruction: %s\n", MoveStack_to_str(TRACKER.p_MOVES_APPLIED));
 
