@@ -45,6 +45,7 @@ int backtrack_moves(CubeTracker* tracker, int count);
 
 int resize_reconstruction(CubeTracker* tracker);
 int append_to_reconstruction(CubeTracker* tracker, const char* string_entry);
+int update_reconstruction(CubeTracker* tracker, int continue_inspect);
 
 
 int update_current_step(CubeTracker* tracker, int continue_scramble, int continue_inspect);

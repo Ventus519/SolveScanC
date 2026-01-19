@@ -231,6 +231,10 @@ int update_current_step_CFOP(CFOPTracker* tracker, const int continue_scramble, 
         case 4: tracker -> STEP = CFOP_OLL; break;
         default: return 1;
     }
+    if (!is_cross_complete(tracker))
+    {
+        tracker -> STEP = CFOP_CROSS;
+    }
     if (tracker -> STEP == CFOP_OLL && is_oll_complete(tracker))
     {
         tracker -> STEP = CFOP_PLL;

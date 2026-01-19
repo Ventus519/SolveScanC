@@ -231,17 +231,28 @@ char* MoveSpec_to_str(const MoveSpec* MOVE_SPEC)
 
         default: return NULL;
     }
+    int offset = 0;
+    switch (MOVE_SPEC -> count)
+    {
+        case 2: offset = 1; result[1] = '2'; break;
+        case 3: offset = 1; result[1] = '3'; break;
+        case 4: offset = 1; result[1] = '4'; break;
+        case 5: offset = 1; result[1] = '5'; break;
+        case 6: offset = 1; result[1] = '6'; break;
+        case 7: offset = 1; result[1] = '7'; break;
+        default: break;
+    }
 
     if (!MOVE_SPEC -> clockwise)
     {
-        result[1] = '\'';
-        result[2] = ' ';
-        result[3] = '\0';
+        result[1 + offset] = '\'';
+        result[2 + offset] = ' ';
+        result[3 + offset] = '\0';
         return result;
     }
 
-    result[1] = ' ';
-    result[2] = '\0';
+    result[1 + offset] = ' ';
+    result[2 + offset] = '\0';
     return result;
 }
 

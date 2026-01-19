@@ -57,7 +57,7 @@ int push_move_to_MoveStack(MoveStack* stack, const MoveSpec* MOVE)
     stack -> MOVE_SEQUENCE[stack -> MOVE_SEQUENCE_LENGTH].MOVE = MOVE -> MOVE;
     stack -> MOVE_SEQUENCE[stack -> MOVE_SEQUENCE_LENGTH].count = MOVE -> count;
     stack -> MOVE_SEQUENCE[stack -> MOVE_SEQUENCE_LENGTH].clockwise = MOVE -> clockwise;
-    stack -> MOVE_SEQUENCE_LENGTH++;
+    stack -> MOVE_SEQUENCE_LENGTH = stack -> MOVE_SEQUENCE_LENGTH + 1;
     return 0;
 }
 
@@ -93,7 +93,7 @@ MoveSpec pop_move_from_MoveStack(MoveStack* stack)
     {
         return DEFAULT_MOVES;
     }
-    stack -> MOVE_SEQUENCE_LENGTH--;
+    stack -> MOVE_SEQUENCE_LENGTH = stack -> MOVE_SEQUENCE_LENGTH - 1;
     return (stack -> MOVE_SEQUENCE[stack -> MOVE_SEQUENCE_LENGTH]);
 }
 

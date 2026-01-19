@@ -106,8 +106,14 @@ int track_scramble(CubeTracker* tracker, const MoveStack* SCRAMBLE_SEQUENCE)
             return 1;
         }
         moves_successful++;
+        append_to_reconstruction(tracker, MoveSpec_to_str(&SCRAMBLE_SEQUENCE -> MOVE_SEQUENCE[i]));
     }
     if (moves_successful != SCRAMBLE_SEQUENCE -> MOVE_SEQUENCE_LENGTH)
+    {
+        return 1;
+    }
+
+    if (append_to_reconstruction(tracker, "\nINSPECT: "))
     {
         return 1;
     }
@@ -153,8 +159,6 @@ int track_MoveStack(CubeTracker* tracker, const MoveStack* MOVES)
     }
 
     return 0;
-
-    return 0;
 }
 
 int apply_move_to_subtracker_cubes(CubeTracker* tracker, const MoveSpec* MOVE_SPEC)
@@ -178,6 +182,7 @@ int apply_move_to_subtracker_cubes(CubeTracker* tracker, const MoveSpec* MOVE_SP
         return 1;
     }
 
+
     return 0;
 }
 
@@ -188,6 +193,47 @@ int track_move_from_spec(CubeTracker* tracker, const MoveSpec* MOVE_SPEC)
         return 1;
     }
 
+    int continue_inspect = 0;
+    switch (tracker -> ENABLED)
+    {
+        case BEGINNERS: break;
+        case CFOP:
+        {
+            const CFOPMilestones CURRENT_STEP = get_current_CFOP_step(tracker);
+            if (CURRENT_STEP == CFOP_SCRAMBLE)
+            {
+                return (apply_move_to_subtracker_cubes(tracker, MOVE_SPEC) || push_move_to_MoveStack(tracker -> p_MOVES_APPLIED, MOVE_SPEC));
+            }
+            if (CURRENT_STEP == CFOP_INSPECT && isMoveSpecRotation(MOVE_SPEC))
+            {
+                continue_inspect = 1;
+            }
+            break;
+        }
+        case ROUX:
+        {
+            const RouxMilestones CURRENT_STEP = get_current_ROUX_step(tracker);
+            if (CURRENT_STEP == ROUX_SCRAMBLE)
+            {
+                return (apply_move_to_subtracker_cubes(tracker, MOVE_SPEC) || push_move_to_MoveStack(tracker -> p_MOVES_APPLIED, MOVE_SPEC));
+            }
+            if (CURRENT_STEP == ROUX_INSPECT && isMoveSpecRotation(MOVE_SPEC))
+            {
+                continue_inspect = 1;
+            }
+            break;
+        }
+        case ZZ: break;
+    }
+
+    if (update_reconstruction(tracker, continue_inspect))
+    {
+        return 1;
+    }
+    if (append_to_reconstruction(tracker, MoveSpec_to_str(MOVE_SPEC)))
+    {
+        return 1;
+    }
     if (apply_move_to_subtracker_cubes(tracker, MOVE_SPEC))
     {
         return 1;
@@ -196,40 +242,16 @@ int track_move_from_spec(CubeTracker* tracker, const MoveSpec* MOVE_SPEC)
     {
         return 1;
     }
-    int continue_inspect = 0;
-    switch (tracker -> ENABLED)
+
+    if (update_reconstruction(tracker, continue_inspect))
     {
-        case BEGINNERS: break;
-        case CFOP:
-            {
-                const CFOPMilestones CURRENT_STEP = get_current_CFOP_step(tracker);
-                if (CURRENT_STEP == CFOP_SCRAMBLE)
-                {
-                    return 0;
-                }
-                if (CURRENT_STEP == CFOP_INSPECT && isMoveSpecRotation(MOVE_SPEC))
-                {
-                    continue_inspect = 1;
-                }
-                break;
-            }
-        case ROUX:
-            {
-                const RouxMilestones CURRENT_STEP = get_current_ROUX_step(tracker);
-                if (CURRENT_STEP == ROUX_SCRAMBLE)
-                {
-                    return 0;
-                }
-                if (CURRENT_STEP == ROUX_INSPECT && isMoveSpecRotation(MOVE_SPEC))
-                {
-                    continue_inspect = 1;
-                }
-                break;
-            }
-        case ZZ: break;
+        return 1;
     }
 
-    return update_current_step(tracker, 0, continue_inspect);
+
+
+
+    return 0;
 }
 
 int backtrack_moves(CubeTracker* tracker, const int count)
@@ -267,6 +289,7 @@ int resize_reconstruction(CubeTracker* tracker)
     }
     free(tracker -> reconstruction);
     tracker -> reconstruction = RECONSTRUCT_TEST;
+    tracker -> reconstruction_max *= 2;
     return 0;
 }
 
@@ -284,6 +307,68 @@ int append_to_reconstruction(CubeTracker* tracker, const char* string_entry)
         }
     }
     strcat(tracker -> reconstruction, string_entry);
+    tracker -> reconstruction_size += strlen(string_entry);
+    return 0;
+}
+
+int update_reconstruction(CubeTracker* tracker, const int continue_inspect)
+{
+    if (is_invalid_CubeTracker(tracker))
+    {
+        return 1;
+    }
+    const CFOPMilestones CURRENT_CFOP_STEP = get_current_CFOP_step(tracker);
+    const RouxMilestones CURRENT_ROUX_STEP = get_current_ROUX_step(tracker);
+
+    if (update_current_step(tracker, 0, continue_inspect))
+    {
+        return 1;
+    }
+    switch (tracker -> ENABLED)
+    {
+        case BEGINNERS: return 1;
+        case CFOP:
+            {
+                const CFOPMilestones NEW_STEP = get_current_CFOP_step(tracker);
+                if (CURRENT_CFOP_STEP == NEW_STEP)
+                {
+                    break;
+                }
+                switch (NEW_STEP)
+                {
+                    case CFOP_INSPECT: return append_to_reconstruction(tracker, "\nINSPECT: ");
+                    case CFOP_CROSS: return append_to_reconstruction(tracker, "\nCROSS: ");
+                    case CFOP_F2L_1: return append_to_reconstruction(tracker, "\n(F2L) Pair 1: ");
+                    case CFOP_F2L_2: return append_to_reconstruction(tracker, "\n(F2L) Pair 2: ");
+                    case CFOP_F2L_3: return append_to_reconstruction(tracker, "\n(F2L) Pair 3: ");
+                    case CFOP_F2L: return append_to_reconstruction(tracker, "\n(F2L) Pair 4: ");
+                    case CFOP_OLL: return append_to_reconstruction(tracker, "\nOLL: ");
+                    case CFOP_PLL: return append_to_reconstruction(tracker, "\nPLL: ");
+                    case CFOP_SOLVED: return append_to_reconstruction(tracker, "\nSOLVED");
+                    default: return 1;
+                }
+            }
+        case ROUX:
+            {
+                const RouxMilestones NEW_STEP = get_current_ROUX_step(tracker);
+                if (CURRENT_ROUX_STEP == NEW_STEP)
+                {
+                    break;
+                }
+                switch (NEW_STEP)
+                {
+                    case ROUX_INSPECT: return append_to_reconstruction(tracker, "\nINSPECT: ");
+                    case ROUX_FIRST_BLOCK: return append_to_reconstruction(tracker, "\nFB: ");
+                    case ROUX_SECOND_BLOCK: return append_to_reconstruction(tracker, "\nSB: ");
+                    case ROUX_LAST_LAYER_CORNERS: return append_to_reconstruction(tracker, "\nCMLL: ");
+                    case ROUX_LAST_SIX_EDGES: return append_to_reconstruction(tracker, "\nL6E: ");
+                    case ROUX_SOLVED: return append_to_reconstruction(tracker, "\nSOLVED");
+                    default: return 1;
+                }
+            }
+        case ZZ: return 1;
+    }
+
     return 0;
 }
 

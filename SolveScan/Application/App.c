@@ -44,7 +44,7 @@ static void on_button_apply_scramble_from_text (gpointer user_data)
     }
     free_MoveStack(SCRAMBLE_SPEC);
     g_print("TRACKED SCRAMBLE\n");
-    g_print("Current reconstruction: %s\n", MoveStack_to_str(TRACKER.p_MOVES_APPLIED));
+    g_print("Current reconstruction: %s\n", TRACKER.reconstruction);
 
 
     gtk_widget_set_visible (GTK_WIDGET (layout.button_apply_scramble_from_text), FALSE);
@@ -150,7 +150,7 @@ static void on_button_apply_moves_from_text (gpointer user_data)
 
     free_MoveStack(APPLIED_MOVES);
     g_print("APPLIED MOVES: %s\n", moves_to_apply);
-    g_print("Current reconstruction: %s\n", MoveStack_to_str(TRACKER.p_MOVES_APPLIED));
+    g_print("Current reconstruction: %s\n", TRACKER.reconstruction);
 
 
 
@@ -190,7 +190,7 @@ static void create_button_layout_controls(GtkWindow* APP_WINDOW, WidgetLayout* p
 
 void activate (GApplication *g_app)
 {
-    initialize_CubeTracker(&TRACKER, "../data.txt", CFOP);
+    initialize_CubeTracker(&TRACKER, "../data.txt", ROUX);
 
 
     GtkApplication* app = GTK_APPLICATION (g_app);
