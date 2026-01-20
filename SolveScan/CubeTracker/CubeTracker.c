@@ -248,9 +248,6 @@ int track_move_from_spec(CubeTracker* tracker, const MoveSpec* MOVE_SPEC)
         return 1;
     }
 
-
-
-
     return 0;
 }
 

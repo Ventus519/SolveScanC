@@ -211,7 +211,7 @@ int update_current_step_ROUX(RouxTracker* tracker, const int continue_scramble, 
     {
         *p_CURRENT_STEP = ROUX_LAST_LAYER_CORNERS;
     }
-    if (*p_CURRENT_STEP == ROUX_LAST_LAYER_CORNERS && last_layer_corners_aligned(tracker))
+    if (*p_CURRENT_STEP == ROUX_LAST_LAYER_CORNERS && last_layer_corners_aligned(tracker) && is_second_block_complete(tracker))
     {
         *p_CURRENT_STEP = ROUX_LAST_SIX_EDGES;
     }

@@ -13,6 +13,8 @@ static int WINDOW_WIDTH = 800;
 static int WINDOW_HEIGHT = 600;
 
 
+EnabledTrackers DEFAULT_ENABLED = ROUX;
+
 CubeTracker TRACKER;
 char* MOVES_DEFAULT = "R";
 
@@ -190,7 +192,7 @@ static void create_button_layout_controls(GtkWindow* APP_WINDOW, WidgetLayout* p
 
 void activate (GApplication *g_app)
 {
-    initialize_CubeTracker(&TRACKER, "../data.txt", ROUX);
+    initialize_CubeTracker(&TRACKER, "../data.txt", DEFAULT_ENABLED);
 
 
     GtkApplication* app = GTK_APPLICATION (g_app);
