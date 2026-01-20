@@ -18,6 +18,9 @@ typedef struct WIDGET_MAP{
 
     GtkWidget* textField_moves_to_apply;
     GtkWidget* textField_scramble;
+    GtkWidget* textView_reconstruction;
+    GtkWidget* scrollWindow_reconstruction;
+    GtkTextBuffer* textBuffer_reconstruction;
 
     GtkWidget* WIDGET_GRID;
 } WidgetLayout;
