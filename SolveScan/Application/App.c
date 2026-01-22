@@ -4,9 +4,6 @@
 
 #include "App.h"
 
-#include <stdnoreturn.h>
-
-#include "../Cube3/Cube3.h"
 #include "../CubeTracker/CubeTracker.h"
 
 static int WINDOW_WIDTH = 800;

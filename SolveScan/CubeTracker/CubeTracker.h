@@ -5,8 +5,8 @@
 #ifndef SOLVESCAN_CUBETRACKER_H
 #define SOLVESCAN_CUBETRACKER_H
 
-#include "RouxTracker.h"
-#include "CFOPTracker.h"
+#include "include/RouxTracker.h"
+#include "include/CFOPTracker.h"
 
 typedef enum TRACKERS_ENABLED {
     BEGINNERS,

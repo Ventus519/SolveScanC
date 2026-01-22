@@ -6,7 +6,7 @@
 #ifndef SOLVESCAN_APP_H
 #define SOLVESCAN_APP_H
 
-#include "../Cube3/Cube3.h"
+#include "../CubeTracker/Cube3/Cube3.h"
 #include "../CubeTracker/CubeTracker.h"
 #include "gtk/gtk.h"
 

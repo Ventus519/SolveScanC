@@ -5,8 +5,8 @@ project(SolveScan C)
 set(CMAKE_C_STANDARD 11)
 
 
-add_subdirectory(Cube3)
-include_directories(Cube3)
+add_subdirectory(CubeTracker)
+include_directories(CubeTracker)
 
 find_package(PkgConfig)
 
@@ -22,23 +22,10 @@ message("INCLUDED LIBRARIES: ${GTK_LIBRARIES}" )
 ADD_DEFINITIONS(${GTK4_CFLAGS_OTHER})
 
 
-set(CubeTrackerSRCS CubeTracker/RouxTracker.c
-                    CubeTracker/RouxTracker.h
-                    CubeTracker/MoveStack.c
-                    CubeTracker/MoveStack.h
-                    CubeTracker/CubeTracker.c
-                    CubeTracker/CubeTracker.h
-                    CubeTracker/CFOPTracker.c
-                    CubeTracker/CFOPTracker.h)
-
-add_library(RouxTracker SHARED ${CubeTrackerSRCS})
-
-target_link_libraries(RouxTracker PRIVATE Cube3)
-
 set(APP_SRCS Application/App.c
              Application/App.h)
 
 add_executable(${PROJECT_NAME} main.c ${APP_SRCS})
-target_link_libraries(${PROJECT_NAME} PRIVATE ${GTK_LIBRARIES} RouxTracker)
+target_link_libraries(${PROJECT_NAME} PRIVATE ${GTK_LIBRARIES} CubeTracker)
 
 target_compile_options(${PROJECT_NAME} PRIVATE ${GTK_CFLAGS_OTHER})

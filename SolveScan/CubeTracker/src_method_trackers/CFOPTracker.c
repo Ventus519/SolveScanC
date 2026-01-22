@@ -3,8 +3,8 @@
 //
 
 #include "CFOPTracker.h"
+#include <stdlib.h>
 
-#include "RouxTracker.h"
 
 int initialize_CFOPTracker(CFOPTracker* tracker)
 {

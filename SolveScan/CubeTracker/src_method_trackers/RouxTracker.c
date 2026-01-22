@@ -8,7 +8,6 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "../Cube3/include/Cube.h"
 
 
 int initialize_RouxTracker(RouxTracker* tracker)
