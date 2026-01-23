@@ -10,6 +10,7 @@ include_directories(Cube3)
 set(SRCS src_method_trackers/RouxTracker.c
          src_method_trackers/CFOPTracker.c
          src_method_trackers/MoveStack.c
+         src_method_trackers/BeginnersTracker.c
          CubeTracker.c
          CubeTracker.h)
 

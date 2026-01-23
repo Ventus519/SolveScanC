@@ -30,8 +30,6 @@ typedef struct RouxTracker
     Cube CUBE;
 } RouxTracker;
 
-
-RouxTracker* create_RouxTracker_from_MoveStack(MoveStack* MOVE_SEQUENCE_DEST);
 int initialize_RouxTracker(RouxTracker* tracker);
 void free_RouxTracker(RouxTracker* tracker);
 
