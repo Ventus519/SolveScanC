@@ -10,7 +10,7 @@
 
 #include "../Cube3/Cube3.h"
 
-typedef enum CFOPMilestones
+typedef enum CFOP_MILESTONES
 {
     CFOP_SCRAMBLE,
     CFOP_INSPECT,
@@ -44,9 +44,9 @@ int initialize_CFOPTracker(CFOPTracker* tracker);
 void free_CFOPTracker(CFOPTracker* tracker);
 
 //CFOP STEPS: CROSS, F2L, OLL, PLL
-int is_cross_complete(const CFOPTracker* tracker);
+int is_cross_complete_CFOP(const CFOPTracker* tracker);
 int count_complete_f2l_pairs(const CFOPTracker* tracker);
-int is_f2l_pair_complete(const CFOPTracker* tracker, Faces FACE_FRONT_OR_FACE_BACK, Faces FACE_RIGHT_OR_FACE_LEFT);
+int is_f2l_pair_complete_CFOP(const CFOPTracker* tracker, Faces FACE_FRONT_OR_FACE_BACK, Faces FACE_RIGHT_OR_FACE_LEFT);
 int update_completed_f2l_pairs(CFOPTracker* tracker);
 
 int is_oll_complete(const CFOPTracker* tracker);

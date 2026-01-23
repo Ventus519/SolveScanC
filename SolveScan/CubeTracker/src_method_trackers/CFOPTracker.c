@@ -29,7 +29,7 @@ void free_CFOPTracker(CFOPTracker* tracker)
     free(tracker);
 }
 
-int is_cross_complete(const CFOPTracker* tracker)
+int is_cross_complete_CFOP(const CFOPTracker* tracker)
 {
     if (!tracker)
     {
@@ -93,7 +93,7 @@ int count_complete_f2l_pairs(const CFOPTracker* tracker)
     return count;
 }
 
-int is_f2l_pair_complete(const CFOPTracker* tracker, const Faces FACE_FRONT_OR_FACE_BACK, const Faces FACE_RIGHT_OR_FACE_LEFT)
+int is_f2l_pair_complete_CFOP(const CFOPTracker* tracker, const Faces FACE_FRONT_OR_FACE_BACK, const Faces FACE_RIGHT_OR_FACE_LEFT)
 {
     if (!tracker)
     {
@@ -151,19 +151,19 @@ int update_completed_f2l_pairs(CFOPTracker* tracker)
         return 1;
     }
     tracker -> f2l_pairs_completed = 0;
-    if (is_f2l_pair_complete(tracker, FACE_FRONT, FACE_LEFT))
+    if (is_f2l_pair_complete_CFOP(tracker, FACE_FRONT, FACE_LEFT))
     {
         tracker -> f2l_pairs_completed |= 0x01;
     }
-    if (is_f2l_pair_complete(tracker, FACE_FRONT, FACE_RIGHT))
+    if (is_f2l_pair_complete_CFOP(tracker, FACE_FRONT, FACE_RIGHT))
     {
         tracker -> f2l_pairs_completed |= 0x02;
     }
-    if (is_f2l_pair_complete(tracker, FACE_BACK, FACE_LEFT))
+    if (is_f2l_pair_complete_CFOP(tracker, FACE_BACK, FACE_LEFT))
     {
         tracker -> f2l_pairs_completed |= 0x04;
     }
-    if (is_f2l_pair_complete(tracker, FACE_BACK, FACE_RIGHT))
+    if (is_f2l_pair_complete_CFOP(tracker, FACE_BACK, FACE_RIGHT))
     {
         tracker -> f2l_pairs_completed |= 0x08;
     }
@@ -214,7 +214,7 @@ int update_current_step_CFOP(CFOPTracker* tracker, const int continue_scramble, 
         return 0;
     }
     tracker -> STEP = CFOP_CROSS;
-    if (is_cross_complete(tracker))
+    if (is_cross_complete_CFOP(tracker))
     {
         tracker -> STEP = CFOP_F2L_1;
     }
