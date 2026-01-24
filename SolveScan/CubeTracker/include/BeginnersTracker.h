@@ -30,11 +30,11 @@ int initialize_BeginnersTracker(BeginnersTracker* tracker);
 void free_BeginnersTracker(BeginnersTracker* tracker);
 
 int is_cross_complete_BEGINNERS(const BeginnersTracker* tracker);
-int is_first_layer_complete(const BeginnersTracker* tracker);
-int is_second_layer_complete(const BeginnersTracker* tracker);
+int is_first_layer_corners_solved(const BeginnersTracker* tracker);
+int is_second_layer_edges_solved(const BeginnersTracker* tracker);
 int is_opposite_cross_oriented(const BeginnersTracker* tracker);
 int is_opposite_cross_solved(const BeginnersTracker* tracker);
-int is_every_corner_permuted(const BeginnersTracker* tracker);
+int is_last_layer_corners_permuted(const BeginnersTracker* tracker);
 
 int update_current_step_BEGINNERS(BeginnersTracker* tracker);
 

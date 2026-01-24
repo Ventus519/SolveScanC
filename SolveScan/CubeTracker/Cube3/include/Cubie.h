@@ -221,8 +221,10 @@ char* MoveSpec_to_str(const MoveSpec* MOVE_SPEC);
 int isMoveSpecRotation(const MoveSpec* MOVE_SPEC);
 
 /**
- * Determines if two Cubies convey the same information determined by their members.
- * They must have the same position and same face color sequence for a return value of 1.
+ * Determines if two Cubies are conveying the same information.
+ * -They must use the same Colors to be considered the same Cubie (return value of 1).
+ * -They do not have to be in the same position, nor do their Face Colors have to be in the same exact order.
+ *
  *
  * @param source The cubie being compared against
  * @param other The cubie to compare with source
