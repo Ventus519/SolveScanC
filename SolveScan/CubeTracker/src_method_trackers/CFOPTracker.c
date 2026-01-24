@@ -93,7 +93,7 @@ int count_complete_f2l_pairs(const CFOPTracker* tracker)
     return count;
 }
 
-int is_f2l_pair_complete_CFOP(const CFOPTracker* tracker, const Faces FACE_FRONT_OR_FACE_BACK, const Faces FACE_RIGHT_OR_FACE_LEFT)
+int is_f2l_pair_complete_CFOP(const CFOPTracker* tracker, const Faces FACE_FB, const Faces FACE_RL)
 {
     if (!tracker)
     {
@@ -101,13 +101,13 @@ int is_f2l_pair_complete_CFOP(const CFOPTracker* tracker, const Faces FACE_FRONT
     }
     int z_offset = 0;
     int x_offset = 0;
-    switch (FACE_FRONT_OR_FACE_BACK)
+    switch (FACE_FB)
     {
         case FACE_FRONT: z_offset = 1; break;
         case FACE_BACK: z_offset = -1; break;
         default: return 0;
     }
-    switch (FACE_RIGHT_OR_FACE_LEFT)
+    switch (FACE_RL)
     {
         case FACE_RIGHT: x_offset = 1; break;
         case FACE_LEFT: x_offset = -1; break;
@@ -124,19 +124,19 @@ int is_f2l_pair_complete_CFOP(const CFOPTracker* tracker, const Faces FACE_FRONT
     {
         return 0;
     }
-    if (F2L_EDGE -> FACE_COLORS[FACE_FRONT_OR_FACE_BACK] != get_face_center_color(&tracker -> CUBE, FACE_FRONT_OR_FACE_BACK))
+    if (F2L_EDGE -> FACE_COLORS[FACE_FB] != get_face_center_color(&tracker -> CUBE, FACE_FB))
     {
         return 0;
     }
-    if (F2L_EDGE -> FACE_COLORS[FACE_RIGHT_OR_FACE_LEFT] != get_face_center_color(&tracker -> CUBE, FACE_RIGHT_OR_FACE_LEFT))
+    if (F2L_EDGE -> FACE_COLORS[FACE_RL] != get_face_center_color(&tracker -> CUBE, FACE_RL))
     {
         return 0;
     }
-    if (NEARBY_CROSS_EDGE_FB -> FACE_COLORS[FACE_FRONT_OR_FACE_BACK] != F2L_CORNER -> FACE_COLORS[FACE_FRONT_OR_FACE_BACK])
+    if (NEARBY_CROSS_EDGE_FB -> FACE_COLORS[FACE_FB] != F2L_CORNER -> FACE_COLORS[FACE_FB])
     {
         return 0;
     }
-    if (NEARBY_CROSS_EDGE_RL -> FACE_COLORS[FACE_RIGHT_OR_FACE_LEFT] != F2L_CORNER -> FACE_COLORS[FACE_RIGHT_OR_FACE_LEFT])
+    if (NEARBY_CROSS_EDGE_RL -> FACE_COLORS[FACE_RL] != F2L_CORNER -> FACE_COLORS[FACE_RL])
     {
         return 0;
     }

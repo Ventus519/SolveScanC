@@ -45,11 +45,12 @@ typedef enum AXIS{
 } Axis;
 
 /**
- * Initializes the Cube pointed by using heap-allocated cubies. Do not free the cubies manually, use free_cube(). Each cubie is given a position such that
- * the initialized cube is symmetric about the origin. These cubies have positions ranging from (-1, -1, -1) to (1, 1, 1)
+ * Initializes the Cube pointed by using heap-allocated cubies. Do not free the cubies manually, use free_cube().
+ * Each cubie is given a position such that the initialized cube is symmetric about the origin.
+ * These cubies have positions ranging from (-1, -1, -1) to (1, 1, 1)
  *
- * Cubes are typically not found alone, and are usually members of structs that track the state of the Cube. For that reason,
- * do not call free_cube() on Cube members of those structs except when freeing the struct.
+ * Cubes are typically not found alone, and are usually members of structs that track the state of the Cube.
+ * For that reason, do not call free_cube() on Cube members of those structs except when freeing the struct.
  *
  * On the event that a NULL pointer is provided, the function will return 1.
  * @param cube Pointer to the Cube struct whose members are to be initialized
@@ -67,18 +68,21 @@ int initialize_cube(Cube* cube);
 void free_cube(Cube* cube);
 
 /**
- *  The color of a face is determined solely by the color indicated by its center-piece, this function retrieves that color.
+ *  The color of a face is determined solely by the color indicated by its center-piece,
+ *  this function retrieves that color.
  *
  *  @param source The cube to use when determining the color of the face provided. NULL pointer is considered an error.
- *  @param FACE The face to determine the "color" of. If the Face provided is invalid for whatever reason, it is considered an error.
+ *  @param FACE The face to determine the "color" of. If the Face provided is invalid for whatever reason,
+ *              it is considered an error.
  *
- *  @return The color of the face provided, determined by the center-piece on said face. Returns COLORS_NULL on any error.
+ *  @return The color of the face provided, determined by the center-piece on said face.
+ *          Returns COLORS_NULL on any error.
  **/
 Colors get_face_center_color(const Cube* source, Faces FACE);
 
 /**
- * Borrows the cubie found at the position specified in the cube provided. Use this to work with the Cubies inside the Cube, and
- * refrain from manual Cubie indexing.
+ * Borrows the cubie found at the position specified in the cube provided. Use this to work with the Cubies inside
+ * the Cube, and refrain from manual Cubie indexing.
  *
  * Recall:
  *      The core is at (0, 0, 0) and the cube must be symmetric about it.
@@ -91,7 +95,8 @@ Colors get_face_center_color(const Cube* source, Faces FACE);
  * @param y The y-coordinate of the Cubie* to obtain (ranges from -1 to 1)
  * @param z The z-coordinate of the Cubie* to obtain (ranges from -1 to 1)
  *
- * @return Borrowed Cubie* that represents the Cubie at the position specified in the Cube provided. This Cubie* must not be freed.
+ * @return Borrowed Cubie* that represents the Cubie at the position specified in the Cube provided.
+ *         This Cubie* must not be freed.
  *
  * On the event that invalid coordinates are provided, or that the Cube provided was invalid, NULL will be returned.
  **/
@@ -99,9 +104,10 @@ Cubie* get_cubie_at_position(const Cube* source, int x, int y, int z);
 
 
 /**
- * Applies the move specified by MOVE_SPEC onto the Cube provided. Unlike on the cubie level, this results in the rotation of a single layer,
- * dictated by the MOVE member of MOVE_SPEC. The amount of times this rotation is applied is determined by the count member of MOVE_SPEC modulo 4.
- * The clockwise member indicates the direction to rotate the layer.
+ * Applies the move specified by MOVE_SPEC onto the Cube provided. Unlike on the cubie level, this results in the
+ * rotation of a single layer, dictated by the MOVE member of MOVE_SPEC. The amount of times this rotation is applied
+ * is determined by the count member of MOVE_SPEC modulo 4. The clockwise member indicates the direction to
+ * rotate the layer.
  *
  * @param source The Cube to apply the move specified
  * @param MOVE_SPEC The specified move to apply
@@ -134,7 +140,9 @@ int is_solved(const Cube* source);
  * @return Error code: 0 on success, 1 on failure.
  */
 int parse_move(const char* MOVE_STR, MoveSpec* MOVE_SPEC_DEST);
-int apply_move_from_formatted_str(Cube* source, const char* MOVE_STR); //Use only for testing the Cube structure itself. Never use if the Cube is a member of another struct
+
+//Use only for testing the Cube structure itself. Never use if the Cube is a member of another struct
+int apply_move_from_formatted_str(Cube* source, const char* MOVE_STR);
 
 void print_cube(const Cube* source); //used for debugging
 

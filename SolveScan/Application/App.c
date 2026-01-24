@@ -10,7 +10,7 @@ static int WINDOW_WIDTH = 800;
 static int WINDOW_HEIGHT = 600;
 
 
-EnabledTrackers DEFAULT_ENABLED = ROUX;
+EnabledTrackers DEFAULT_ENABLED = BEGINNERS;
 
 CubeTracker TRACKER;
 char* MOVES_DEFAULT = "R";
@@ -167,8 +167,10 @@ static void link_button_handlers(WidgetLayout* p_layout)
 {
     g_signal_connect(p_layout -> button_get_current_step, "clicked", G_CALLBACK (on_button_get_current_step), NULL);
     g_signal_connect(p_layout -> button_is_solved, "clicked", G_CALLBACK (on_button_is_solved), NULL);
-    g_signal_connect(p_layout -> button_apply_moves_from_text, "clicked", G_CALLBACK (on_button_apply_moves_from_text), NULL);
-    g_signal_connect(p_layout -> button_apply_scramble_from_text, "clicked", G_CALLBACK (on_button_apply_scramble_from_text), NULL);
+    g_signal_connect(p_layout -> button_apply_moves_from_text, "clicked",
+                     G_CALLBACK (on_button_apply_moves_from_text), NULL);
+    g_signal_connect(p_layout -> button_apply_scramble_from_text, "clicked",
+                     G_CALLBACK (on_button_apply_scramble_from_text), NULL);
 }
 
 static void create_button_layout_controls(GtkWindow* APP_WINDOW, WidgetLayout* p_layout)
@@ -184,7 +186,8 @@ static void create_button_layout_controls(GtkWindow* APP_WINDOW, WidgetLayout* p
     p_layout -> scrollWindow_reconstruction = gtk_scrolled_window_new();
     p_layout -> textBuffer_reconstruction = gtk_text_buffer_new(NULL);
     p_layout -> textView_reconstruction = gtk_text_view_new_with_buffer(p_layout -> textBuffer_reconstruction);
-    gtk_scrolled_window_set_child(GTK_SCROLLED_WINDOW (p_layout -> scrollWindow_reconstruction), p_layout -> textView_reconstruction);
+    gtk_scrolled_window_set_child(GTK_SCROLLED_WINDOW (p_layout -> scrollWindow_reconstruction),
+                                  p_layout -> textView_reconstruction);
     gtk_text_view_set_editable(GTK_TEXT_VIEW (p_layout -> textView_reconstruction), FALSE);
     gtk_widget_set_can_focus(GTK_WIDGET (p_layout -> textView_reconstruction), FALSE);
 
@@ -193,13 +196,20 @@ static void create_button_layout_controls(GtkWindow* APP_WINDOW, WidgetLayout* p
     gtk_window_set_child (APP_WINDOW, p_layout -> WIDGET_GRID);
     gtk_grid_set_row_homogeneous(GTK_GRID(p_layout -> WIDGET_GRID), FALSE);
 
-    gtk_grid_attach(GTK_GRID(p_layout -> WIDGET_GRID), p_layout -> button_is_solved, 3, 2, 1, 1);
-    gtk_grid_attach(GTK_GRID(p_layout -> WIDGET_GRID), p_layout -> textField_moves_to_apply, 0, 0, 2, 1);
-    gtk_grid_attach(GTK_GRID(p_layout -> WIDGET_GRID), p_layout -> textField_scramble, 0, 0, 2, 1);
-    gtk_grid_attach(GTK_GRID(p_layout -> WIDGET_GRID), p_layout -> button_apply_scramble_from_text, 2, 0, 1, 1);
-    gtk_grid_attach(GTK_GRID(p_layout -> WIDGET_GRID), p_layout -> button_apply_moves_from_text, 2, 0, 1, 1);
-    gtk_grid_attach(GTK_GRID(p_layout -> WIDGET_GRID), p_layout -> button_get_current_step, 0, 0, 1, 1);
-    gtk_grid_attach(GTK_GRID(p_layout -> WIDGET_GRID), p_layout -> scrollWindow_reconstruction, 0, 1, 3, 3);
+    gtk_grid_attach(GTK_GRID(p_layout -> WIDGET_GRID), p_layout -> button_is_solved,
+                      3, 2, 1, 1);
+    gtk_grid_attach(GTK_GRID(p_layout -> WIDGET_GRID), p_layout -> textField_moves_to_apply,
+                      0, 0, 2, 1);
+    gtk_grid_attach(GTK_GRID(p_layout -> WIDGET_GRID), p_layout -> textField_scramble,
+                      0, 0, 2, 1);
+    gtk_grid_attach(GTK_GRID(p_layout -> WIDGET_GRID), p_layout -> button_apply_scramble_from_text,
+                      2, 0, 1, 1);
+    gtk_grid_attach(GTK_GRID(p_layout -> WIDGET_GRID), p_layout -> button_apply_moves_from_text,
+                      2, 0, 1, 1);
+    gtk_grid_attach(GTK_GRID(p_layout -> WIDGET_GRID), p_layout -> button_get_current_step,
+                      0, 0, 1, 1);
+    gtk_grid_attach(GTK_GRID(p_layout -> WIDGET_GRID), p_layout -> scrollWindow_reconstruction,
+                      0, 1, 3, 3);
 
     gtk_widget_set_visible(p_layout -> button_is_solved, FALSE);
     gtk_widget_set_visible(p_layout -> button_apply_moves_from_text, FALSE);

@@ -138,10 +138,10 @@ int last_layer_corners_aligned(const RouxTracker* tracker)
         return 0;
     }
 
-    Cubie* UFR_CORNER = get_cubie_at_position(&tracker->CUBE, 1, 1, 1);
-    Cubie* UBR_CORNER = get_cubie_at_position(&tracker->CUBE, 1, 1, -1);
-    Cubie* UFL_CORNER = get_cubie_at_position(&tracker->CUBE, -1, 1, 1);
-    Cubie* UBL_CORNER = get_cubie_at_position(&tracker->CUBE, -1, 1, -1);
+    const Cubie* UFR_CORNER = get_cubie_at_position(&tracker->CUBE, 1, 1, 1);
+    const Cubie* UBR_CORNER = get_cubie_at_position(&tracker->CUBE, 1, 1, -1);
+    const Cubie* UFL_CORNER = get_cubie_at_position(&tracker->CUBE, -1, 1, 1);
+    const Cubie* UBL_CORNER = get_cubie_at_position(&tracker->CUBE, -1, 1, -1);
     if (!UFR_CORNER || !UBR_CORNER || !UFL_CORNER || !UBL_CORNER)
     {
         return 0;
@@ -210,7 +210,8 @@ int update_current_step_ROUX(RouxTracker* tracker, const int continue_scramble, 
     {
         *p_CURRENT_STEP = ROUX_LAST_LAYER_CORNERS;
     }
-    if (*p_CURRENT_STEP == ROUX_LAST_LAYER_CORNERS && last_layer_corners_aligned(tracker) && is_second_block_complete(tracker))
+    if (*p_CURRENT_STEP == ROUX_LAST_LAYER_CORNERS && last_layer_corners_aligned(tracker) &&
+        is_second_block_complete(tracker))
     {
         *p_CURRENT_STEP = ROUX_LAST_SIX_EDGES;
     }

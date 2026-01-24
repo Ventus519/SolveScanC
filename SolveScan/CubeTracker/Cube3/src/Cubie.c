@@ -275,35 +275,29 @@ int isSameCubie(const Cubie* source, const Cubie* other)
     {
         return 0;
     }
-
-    const Vec3* source_pos = getCubiePosition(source);
-    const Vec3* other_pos = getCubiePosition(other);
-    if (!source_pos || !other_pos)
-    {
-        return 0;
-    }
-    if (source_pos -> x != other_pos -> x)
-    {
-        return 0;
-    }
-    if (source_pos -> y != other_pos -> y)
-    {
-        return 0;
-    }
-    if (source_pos -> z != other_pos -> z)
-    {
-        return 0;
-    }
-
-
     for (int i = 0; i < 6; i++)
     {
-        if (source -> FACE_COLORS[i] != other -> FACE_COLORS[i])
+        const Colors SOURCE_CHECKED_COLOR = source -> FACE_COLORS[i];
+        if (!isColorOnCubie(other, SOURCE_CHECKED_COLOR))
         {
             return 0;
         }
     }
+
     return 1;
+}
+
+int isColorOnCubie(const Cubie* source, const Colors COLOR)
+{
+    for (int i = 0; i < 6; i++)
+    {
+        if (source->FACE_COLORS[i] == COLOR)
+        {
+            return 1;
+        }
+    }
+
+    return 0;
 }
 
 void printCubie(const Cubie* source)

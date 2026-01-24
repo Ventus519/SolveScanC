@@ -36,7 +36,16 @@ int initialize_CubeTracker(CubeTracker* tracker, const char* file_path, const En
 
     switch (TRACKER_TO_ENABLE)
     {
-        case BEGINNERS: break;
+        case BEGINNERS:
+        {
+            BeginnersTracker* TRACK_BEGINNERS = malloc(sizeof(BeginnersTracker));
+            if (initialize_BeginnersTracker(TRACK_BEGINNERS))
+            {
+                goto ENABLED_TRACKER_FAIL;
+            }
+            tracker -> tracker_BEGINNERS = TRACK_BEGINNERS;
+            break;
+        }
         case CFOP:
             {
                 CFOPTracker* TRACK_CFOP = malloc(sizeof(CFOPTracker));
@@ -83,7 +92,7 @@ int is_invalid_CubeTracker(const CubeTracker* tracker)
     }
     switch (tracker -> ENABLED)
     {
-        case BEGINNERS: return 0;
+        case BEGINNERS: return (!tracker -> tracker_BEGINNERS);
         case CFOP: return (!tracker -> tracker_CFOP);
         case ROUX: return (!tracker -> tracker_ROUX);
         default: return 0;
@@ -113,7 +122,7 @@ int track_scramble(CubeTracker* tracker, const MoveStack* SCRAMBLE_SEQUENCE)
         return 1;
     }
 
-    if (append_to_reconstruction(tracker, "\nINSPECT: "))
+    if (append_to_reconstruction(tracker, "\n\nINSPECT: "))
     {
         return 1;
     }
@@ -129,7 +138,7 @@ int is_subtracker_cube_solved(const CubeTracker* tracker)
     }
     switch (tracker -> ENABLED)
     {
-        case BEGINNERS: break;
+        case BEGINNERS: return is_solved(&tracker -> tracker_BEGINNERS -> CUBE);
         case CFOP: return is_solved(&tracker -> tracker_CFOP -> CUBE);
         case ROUX: return is_solved(&tracker -> tracker_ROUX -> CUBE);
         case ZZ: break;
@@ -172,7 +181,10 @@ int apply_move_to_subtracker_cubes(CubeTracker* tracker, const MoveSpec* MOVE_SP
 
     switch (tracker -> ENABLED)
     {
-        case BEGINNERS: return 1;
+        case BEGINNERS:
+        {
+            apply_move_error_code = apply_move_from_spec(&tracker -> tracker_BEGINNERS -> CUBE, MOVE_SPEC); break;
+        }
         case CFOP: apply_move_error_code = apply_move_from_spec(&tracker -> tracker_CFOP -> CUBE, MOVE_SPEC); break;
         case ROUX: apply_move_error_code = apply_move_from_spec(&tracker -> tracker_ROUX -> CUBE, MOVE_SPEC); break;
         case ZZ: return 1;
@@ -196,13 +208,27 @@ int track_move_from_spec(CubeTracker* tracker, const MoveSpec* MOVE_SPEC)
     int continue_inspect = 0;
     switch (tracker -> ENABLED)
     {
-        case BEGINNERS: break;
+        case BEGINNERS:
+        {
+            const BeginnersMilestones CURRENT_STEP = get_current_BEGINNERS_step(tracker);
+            if (CURRENT_STEP == BEGINNERS_SCRAMBLE)
+            {
+                return (apply_move_to_subtracker_cubes(tracker, MOVE_SPEC) ||
+                    push_move_to_MoveStack(tracker -> p_MOVES_APPLIED, MOVE_SPEC));
+            }
+            if (CURRENT_STEP == BEGINNERS_INSPECT && isMoveSpecRotation(MOVE_SPEC))
+            {
+                continue_inspect = 1;
+            }
+            break;
+        }
         case CFOP:
         {
             const CFOPMilestones CURRENT_STEP = get_current_CFOP_step(tracker);
             if (CURRENT_STEP == CFOP_SCRAMBLE)
             {
-                return (apply_move_to_subtracker_cubes(tracker, MOVE_SPEC) || push_move_to_MoveStack(tracker -> p_MOVES_APPLIED, MOVE_SPEC));
+                return (apply_move_to_subtracker_cubes(tracker, MOVE_SPEC) ||
+                    push_move_to_MoveStack(tracker -> p_MOVES_APPLIED, MOVE_SPEC));
             }
             if (CURRENT_STEP == CFOP_INSPECT && isMoveSpecRotation(MOVE_SPEC))
             {
@@ -215,7 +241,8 @@ int track_move_from_spec(CubeTracker* tracker, const MoveSpec* MOVE_SPEC)
             const RouxMilestones CURRENT_STEP = get_current_ROUX_step(tracker);
             if (CURRENT_STEP == ROUX_SCRAMBLE)
             {
-                return (apply_move_to_subtracker_cubes(tracker, MOVE_SPEC) || push_move_to_MoveStack(tracker -> p_MOVES_APPLIED, MOVE_SPEC));
+                return (apply_move_to_subtracker_cubes(tracker, MOVE_SPEC) ||
+                    push_move_to_MoveStack(tracker -> p_MOVES_APPLIED, MOVE_SPEC));
             }
             if (CURRENT_STEP == ROUX_INSPECT && isMoveSpecRotation(MOVE_SPEC))
             {
@@ -316,6 +343,7 @@ int update_reconstruction(CubeTracker* tracker, const int continue_inspect)
     }
     const CFOPMilestones CURRENT_CFOP_STEP = get_current_CFOP_step(tracker);
     const RouxMilestones CURRENT_ROUX_STEP = get_current_ROUX_step(tracker);
+    const BeginnersMilestones CURRENT_BEGINNERS_STEP = get_current_BEGINNERS_step(tracker);
 
     if (update_current_step(tracker, 0, continue_inspect))
     {
@@ -323,7 +351,32 @@ int update_reconstruction(CubeTracker* tracker, const int continue_inspect)
     }
     switch (tracker -> ENABLED)
     {
-        case BEGINNERS: return 1;
+        case BEGINNERS:
+        {
+            const BeginnersMilestones NEW_STEP = get_current_BEGINNERS_step(tracker);
+            if (CURRENT_BEGINNERS_STEP == NEW_STEP)
+            {
+                break;
+            }
+            switch (NEW_STEP)
+            {
+                case BEGINNERS_INSPECT: return append_to_reconstruction(tracker, "\nINSPECT: ");
+                case BEGINNERS_CROSS: return append_to_reconstruction(tracker, "\nCROSS: ");
+                case BEGINNERS_FIRST_LAYER: return append_to_reconstruction(tracker, "\nFIRST LAYER: ");
+                case BEGINNERS_SECOND_LAYER: return append_to_reconstruction(tracker, "\nSECOND LAYER: ");
+                case BEGINNERS_ORIENT_OPPOSITE_CROSS: return append_to_reconstruction(tracker,
+                    "\nLAST LAYER CROSS (ORIENTATION): ");
+                case BEGINNERS_PERMUTE_OPPOSITE_CROSS: return append_to_reconstruction(tracker,
+                    "\nLAST LAYER CROSS (PERMUTATION): ");
+                case BEGINNERS_PERMUTE_OPPOSITE_CORNERS: return append_to_reconstruction(tracker,
+                    "\nLAST LAYER CORNERS (PERMUTATION): ");
+                case BEGINNERS_ORIENT_OPPOSITE_CORNERS: return append_to_reconstruction(tracker,
+                    "\nLAST LAYER CORNERS (ORIENTATION): ");
+                case BEGINNERS_SOLVED: return append_to_reconstruction(tracker, "\nSOLVED");
+                default: return 1;
+            }
+
+        }
         case CFOP:
             {
                 const CFOPMilestones NEW_STEP = get_current_CFOP_step(tracker);
@@ -377,7 +430,8 @@ int update_current_step(CubeTracker* tracker, const int continue_scramble, const
     }
     switch (tracker -> ENABLED)
     {
-        case BEGINNERS: return 1;
+        case BEGINNERS: return update_current_step_BEGINNERS(tracker -> tracker_BEGINNERS, continue_scramble,
+            continue_inspect);
         case CFOP: return update_current_step_CFOP(tracker -> tracker_CFOP, continue_scramble, continue_inspect);
         case ROUX: return update_current_step_ROUX(tracker -> tracker_ROUX, continue_scramble, continue_inspect);
         case ZZ: return 1;
@@ -411,3 +465,15 @@ RouxMilestones get_current_ROUX_step(const CubeTracker* tracker)
     return tracker -> tracker_ROUX -> STEP;
 }
 
+BeginnersMilestones get_current_BEGINNERS_step(const CubeTracker* tracker)
+{
+    if (is_invalid_CubeTracker(tracker))
+    {
+        return BEGINNERS_MILESTONE_NULL;
+    }
+    if (tracker -> ENABLED != BEGINNERS)
+    {
+        return BEGINNERS_MILESTONE_NULL;
+    }
+    return tracker -> tracker_BEGINNERS -> STEP;
+}

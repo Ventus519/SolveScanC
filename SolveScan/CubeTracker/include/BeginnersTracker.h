@@ -17,7 +17,9 @@ typedef enum BEGINNERS_MILESTONES
     BEGINNERS_ORIENT_OPPOSITE_CROSS,
     BEGINNERS_PERMUTE_OPPOSITE_CROSS,
     BEGINNERS_PERMUTE_OPPOSITE_CORNERS,
-    BEGINNERS_SOLVED
+    BEGINNERS_ORIENT_OPPOSITE_CORNERS,
+    BEGINNERS_SOLVED,
+    BEGINNERS_MILESTONE_NULL
 } BeginnersMilestones;
 
 typedef struct BEGINNERS_TRACKER
@@ -36,6 +38,6 @@ int is_opposite_cross_oriented(const BeginnersTracker* tracker);
 int is_opposite_cross_solved(const BeginnersTracker* tracker);
 int is_last_layer_corners_permuted(const BeginnersTracker* tracker);
 
-int update_current_step_BEGINNERS(BeginnersTracker* tracker);
+int update_current_step_BEGINNERS(BeginnersTracker* tracker, int continue_scramble, int continue_inspect);
 
 #endif //SOLVESCAN_BEGINNERSTRACKER_H
