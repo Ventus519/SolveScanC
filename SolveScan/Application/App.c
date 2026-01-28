@@ -10,7 +10,7 @@ static int WINDOW_WIDTH = 800;
 static int WINDOW_HEIGHT = 600;
 
 
-EnabledTrackers DEFAULT_ENABLED = BEGINNERS;
+EnabledTrackers DEFAULT_ENABLED = ROUX;
 
 CubeTracker TRACKER;
 char* MOVES_DEFAULT = "R";

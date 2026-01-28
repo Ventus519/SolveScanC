@@ -23,16 +23,16 @@ int initialize_CubeTracker(CubeTracker* tracker, const char* file_path, const En
     }
     tracker -> p_MOVES_APPLIED = STACK;
 
-    tracker -> reconstruction_size = 11;
-    tracker -> reconstruction_max = 22;
+    tracker -> reconstruction_size = 30;
+    tracker -> reconstruction_max = 60;
     char* RECONSTRUCT_TEST = malloc(sizeof(char) * tracker -> reconstruction_max);
     if (!RECONSTRUCT_TEST)
     {
         goto RECONSTRUCTION_FAIL;
     }
     RECONSTRUCT_TEST[0] = '\0';
-    strcat (RECONSTRUCT_TEST, "SCRAMBLE: ");
-    tracker -> reconstruction = RECONSTRUCT_TEST;
+    strcat (RECONSTRUCT_TEST, "METHOD: ");
+
 
     switch (TRACKER_TO_ENABLE)
     {
@@ -44,6 +44,9 @@ int initialize_CubeTracker(CubeTracker* tracker, const char* file_path, const En
                 goto ENABLED_TRACKER_FAIL;
             }
             tracker -> tracker_BEGINNERS = TRACK_BEGINNERS;
+
+            strcat(RECONSTRUCT_TEST, "BEGINNERS\n\n");
+
             break;
         }
         case CFOP:
@@ -54,6 +57,8 @@ int initialize_CubeTracker(CubeTracker* tracker, const char* file_path, const En
                     goto ENABLED_TRACKER_FAIL;
                 }
                 tracker -> tracker_CFOP = TRACK_CFOP;
+
+                strcat(RECONSTRUCT_TEST, "CFOP\n\n");
                 break;
             }
         case ROUX:
@@ -64,12 +69,14 @@ int initialize_CubeTracker(CubeTracker* tracker, const char* file_path, const En
                     goto ENABLED_TRACKER_FAIL;
                 }
                 tracker -> tracker_ROUX = TRACK_ROUX;
+
+                strcat(RECONSTRUCT_TEST, "ROUX\n\n");
                 break;
             }
         case ZZ: break;
     }
-
-
+    strcat(RECONSTRUCT_TEST, "SCRAMBLE: ");
+    tracker -> reconstruction = RECONSTRUCT_TEST;
 
     return 0;
 
@@ -127,6 +134,7 @@ int track_scramble(CubeTracker* tracker, const MoveStack* SCRAMBLE_SEQUENCE)
         return 1;
     }
 
+    tracker -> SCRAMBLE_MOVE_LENGTH = tracker -> p_MOVES_APPLIED -> MOVE_SEQUENCE_LENGTH;
     return update_current_step(tracker, 0, 1);
 }
 
@@ -372,7 +380,13 @@ int update_reconstruction(CubeTracker* tracker, const int continue_inspect)
                     "\nLAST LAYER CORNERS (PERMUTATION): ");
                 case BEGINNERS_ORIENT_OPPOSITE_CORNERS: return append_to_reconstruction(tracker,
                     "\nLAST LAYER CORNERS (ORIENTATION): ");
-                case BEGINNERS_SOLVED: return append_to_reconstruction(tracker, "\nSOLVED");
+                case BEGINNERS_SOLVED:
+                {
+                    char entry[36];
+                    snprintf(entry, sizeof entry, "\nSOLVED: %zu MOVES",
+                        tracker -> p_MOVES_APPLIED -> MOVE_SEQUENCE_LENGTH - tracker -> SCRAMBLE_MOVE_LENGTH);
+                    return append_to_reconstruction(tracker, entry);
+                }
                 default: return 1;
             }
 
@@ -394,7 +408,13 @@ int update_reconstruction(CubeTracker* tracker, const int continue_inspect)
                     case CFOP_F2L: return append_to_reconstruction(tracker, "\n(F2L) Pair 4: ");
                     case CFOP_OLL: return append_to_reconstruction(tracker, "\nOLL: ");
                     case CFOP_PLL: return append_to_reconstruction(tracker, "\nPLL: ");
-                    case CFOP_SOLVED: return append_to_reconstruction(tracker, "\nSOLVED");
+                    case CFOP_SOLVED:
+                    {
+                        char entry[36];
+                        snprintf(entry, sizeof entry, "\nSOLVED: %zu MOVES",
+                            tracker -> p_MOVES_APPLIED -> MOVE_SEQUENCE_LENGTH - tracker -> SCRAMBLE_MOVE_LENGTH);
+                        return append_to_reconstruction(tracker, entry);
+                    }
                     default: return 1;
                 }
             }
@@ -412,7 +432,13 @@ int update_reconstruction(CubeTracker* tracker, const int continue_inspect)
                     case ROUX_SECOND_BLOCK: return append_to_reconstruction(tracker, "\nSB: ");
                     case ROUX_LAST_LAYER_CORNERS: return append_to_reconstruction(tracker, "\nCMLL: ");
                     case ROUX_LAST_SIX_EDGES: return append_to_reconstruction(tracker, "\nL6E: ");
-                    case ROUX_SOLVED: return append_to_reconstruction(tracker, "\nSOLVED");
+                    case ROUX_SOLVED:
+                    {
+                        char entry[36];
+                        snprintf(entry, sizeof entry, "\nSOLVED: %zu MOVES",
+                            tracker -> p_MOVES_APPLIED -> MOVE_SEQUENCE_LENGTH - tracker -> SCRAMBLE_MOVE_LENGTH);
+                        return append_to_reconstruction(tracker, entry);
+                    }
                     default: return 1;
                 }
             }

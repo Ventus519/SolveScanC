@@ -31,6 +31,7 @@ typedef struct CUBE_TRACKER {
 
 
     char* save_file_path;
+    size_t SCRAMBLE_MOVE_LENGTH;
 
 } CubeTracker;
 

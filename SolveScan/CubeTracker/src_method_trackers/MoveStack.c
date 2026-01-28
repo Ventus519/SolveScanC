@@ -173,6 +173,7 @@ char* MoveStack_to_str(MoveStack* stack)
     return result_str;
 }
 
+
 MoveStack* move_str_to_MoveStack(char* move_str)
 {
     if (!move_str)
