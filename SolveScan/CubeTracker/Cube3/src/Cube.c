@@ -610,23 +610,8 @@ int parse_move(const char* MOVE_STR, MoveSpec* MOVE_SPEC_DEST)
     }
 
     errno = 0;
-    const char query = '\'';
     char* end;
-    const char* p_prime = strchr(MOVE_STR, query);
 
-
-    if (p_prime == NULL)
-    {
-        MOVE_SPEC_DEST -> clockwise = 1;
-    }
-    else
-    {
-        if (p_prime != strrchr(MOVE_STR, query))
-        {
-            return 1;
-        }
-        MOVE_SPEC_DEST -> clockwise = 0;
-    }
     const int test = strtol(MOVE_STR + 1, &end, 10);
     if (errno == ERANGE)
     {
@@ -641,16 +626,12 @@ int parse_move(const char* MOVE_STR, MoveSpec* MOVE_SPEC_DEST)
         MOVE_SPEC_DEST -> count = test;
     }
 
-
-    for (int i = 1; i < strlen(MOVE_STR); i++)
+    switch (*end)
     {
-        const char* ENSURE_ONLY_ONE_MOVE = MOVE_STR + i;
-        if (!parse_move(ENSURE_ONLY_ONE_MOVE, MOVE_SPEC_DEST))
-        {
-            return 1;
-        }
+        case '\0': MOVE_SPEC_DEST -> clockwise = 1; break;
+        case '\'': MOVE_SPEC_DEST -> clockwise = 0; break;
+        default: return 1;
     }
-
     return 0;
 }
 
