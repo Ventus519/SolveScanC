@@ -6,7 +6,8 @@
 /** @struct CUBE
  *      Represents a 3x3x3 Rubik's Cube and operates in the same way. (Does not easily expand to larger dimensions)
  *      Each piece of the Cube is considered a cubie (including the core).
- *      Retrieving Cubies of the Cube should be done with get_cubie_at_position() and not with manual indexing
+ *      Retrieving Cubies of the Cube should be done with get_cubie_at_position() or get_cubie_from_faces()
+ *      and not with manual indexing
  *
  *      The coordinate system follows the axes of rotation from standard WCA moves:
  *          -Core: The colorless origin of the Cube (0, 0, 0)
@@ -84,6 +85,8 @@ Colors get_face_center_color(const Cube* source, Faces FACE);
  * Borrows the cubie found at the position specified in the cube provided. Use this to work with the Cubies inside
  * the Cube, and refrain from manual Cubie indexing.
  *
+ * This function should only be used when iterating over Cubies in the Cube.
+ *
  * Recall:
  *      The core is at (0, 0, 0) and the cube must be symmetric about it.
  *      +x is the direction from the core to the R face
@@ -101,6 +104,30 @@ Colors get_face_center_color(const Cube* source, Faces FACE);
  * On the event that invalid coordinates are provided, or that the Cube provided was invalid, NULL will be returned.
  **/
 Cubie* get_cubie_at_position(const Cube* source, int x, int y, int z);
+
+
+/**
+ * Borrows the cubie found at the position specified in the cube provided. Use this to work with the Cubies inside
+ * the Cube, and refrain from manual Cubie indexing.
+ *
+ * This function is preferred over get_cubie_at_position for getting known Cubies.
+ *
+ * The ordering of arguments is meant to match how the pieces are referred to by Cubers. The corner at the intersection
+ * of the Front face, Up face, and Right face would be called the UFR corner (the U is for U-face, F for F-face, and R
+ * for R-face).
+ *
+ * @param source The cube used to borrow the returned Cubie*
+ * @param FACE_UD The face along the y-axis that the Cubie lies on. Accepts only: FACE_UP, FACE_DOWN, FACE_NULL
+ * @param FACE_FB The face along the z-axis that the Cubie lies on. Accepts only: FACE_FRONT, FACE_BACK, FACE_NULL
+ * @param FACE_RL The face along the x-axis that the Cubie lies on. Accepts only: FACE_RIGHT, FACE_LEFT, FACE_NULL
+ *
+ * @return Borrowed Cubie* that represents the Cubie at the intersection of the faces provided.
+ *         This Cubie* must not be freed.
+ *
+ * On the event that an invalid face combination is provided, or that the Cube provided was invalid,
+ * NULL will be returned.
+ **/
+Cubie* get_cubie_from_faces(const Cube* source, Faces FACE_UD, Faces FACE_FB, Faces FACE_RL);
 
 
 /**

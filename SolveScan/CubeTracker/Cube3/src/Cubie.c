@@ -72,6 +72,11 @@ static int cycleFaces(Cubie* source, const Faces FACE1, const Faces FACE2, const
         return 1;
     }
 
+    if (FACE1 == FACES_NULL || FACE2 == FACES_NULL || FACE3 == FACES_NULL || FACE4 == FACES_NULL)
+    {
+        return 1;
+    }
+
     if (clockwise)
     {
         const Colors COLOR4 = source -> FACE_COLORS[FACE4];

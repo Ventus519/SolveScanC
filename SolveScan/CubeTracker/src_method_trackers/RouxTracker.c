@@ -37,14 +37,14 @@ void free_RouxTracker(RouxTracker* tracker)
 
 
 
-int is_ROUX_block_complete(const RouxTracker* tracker, const Faces FACE_LEFT_OR_FACE_RIGHT)
+int is_ROUX_block_complete(const RouxTracker* tracker, const Faces FACE_RL)
 {
     if (!tracker)
     {
         return 0;
     }
     int x_buf; //since both FACE_LEFT and FACE_RIGHT lie on the x-axis
-    switch (FACE_LEFT_OR_FACE_RIGHT)
+    switch (FACE_RL)
     {
         case FACE_LEFT: x_buf = -1; break;
         case FACE_RIGHT: x_buf = 1; break;
@@ -57,16 +57,16 @@ int is_ROUX_block_complete(const RouxTracker* tracker, const Faces FACE_LEFT_OR_
         return 0;
     }
 
-    const Cubie* LR_FACE_CENTER = get_cubie_at_position(CUBE, x_buf, 0, 0);
-    const Cubie* B_BLOCK_EXTENSION = get_cubie_at_position(CUBE, x_buf, -1, -1);
-    const Cubie* F_BLOCK_EXTENSION = get_cubie_at_position(CUBE, x_buf, -1, 1);
+    const Cubie* LR_FACE_CENTER = get_cubie_from_faces(CUBE, FACES_NULL, FACES_NULL, FACE_RL);
+    const Cubie* B_BLOCK_EXTENSION = get_cubie_from_faces(CUBE, FACE_DOWN, FACE_BACK, FACE_RL);
+    const Cubie* F_BLOCK_EXTENSION = get_cubie_from_faces(CUBE, FACE_DOWN, FACE_FRONT, FACE_RL);
 
     if (!LR_FACE_CENTER || !B_BLOCK_EXTENSION || !F_BLOCK_EXTENSION)
     {
         return 0;
     }
 
-    const Colors MAIN_BLOCK_COLOR = LR_FACE_CENTER -> FACE_COLORS[FACE_LEFT_OR_FACE_RIGHT];
+    const Colors MAIN_BLOCK_COLOR = LR_FACE_CENTER -> FACE_COLORS[FACE_RL];
     const Colors BACK_EXTENSION_COLOR = B_BLOCK_EXTENSION -> FACE_COLORS[FACE_BACK];
     const Colors FRONT_EXTENSION_COLOR = F_BLOCK_EXTENSION -> FACE_COLORS[FACE_FRONT];
     const Colors BLOCK_BASE_COLOR = B_BLOCK_EXTENSION -> FACE_COLORS[FACE_DOWN];
@@ -96,7 +96,7 @@ int is_ROUX_block_complete(const RouxTracker* tracker, const Faces FACE_LEFT_OR_
             {
                 return 0;
             }
-            if (MAIN_BLOCK_TEST -> FACE_COLORS[FACE_LEFT_OR_FACE_RIGHT] != MAIN_BLOCK_COLOR)
+            if (MAIN_BLOCK_TEST -> FACE_COLORS[FACE_RL] != MAIN_BLOCK_COLOR)
             {
                 return 0;
             }
@@ -125,8 +125,8 @@ int last_layer_corners_aligned(const RouxTracker* tracker)
     {
         return 0;
     }
-    const Cubie* R_BLOCK_BASE_EDGE = get_cubie_at_position(&tracker->CUBE, 1, -1, 0);
-    const Cubie* L_BLOCK_BASE_EDGE = get_cubie_at_position(&tracker->CUBE, -1, -1, 0);
+    const Cubie* R_BLOCK_BASE_EDGE = get_cubie_from_faces(&tracker->CUBE, FACE_DOWN, FACES_NULL, FACE_RIGHT);
+    const Cubie* L_BLOCK_BASE_EDGE = get_cubie_from_faces(&tracker->CUBE, FACE_DOWN, FACES_NULL, FACE_LEFT);
     if (!R_BLOCK_BASE_EDGE || !L_BLOCK_BASE_EDGE)
     {
         return 0;
@@ -138,10 +138,10 @@ int last_layer_corners_aligned(const RouxTracker* tracker)
         return 0;
     }
 
-    const Cubie* UFR_CORNER = get_cubie_at_position(&tracker->CUBE, 1, 1, 1);
-    const Cubie* UBR_CORNER = get_cubie_at_position(&tracker->CUBE, 1, 1, -1);
-    const Cubie* UFL_CORNER = get_cubie_at_position(&tracker->CUBE, -1, 1, 1);
-    const Cubie* UBL_CORNER = get_cubie_at_position(&tracker->CUBE, -1, 1, -1);
+    const Cubie* UFR_CORNER = get_cubie_from_faces(&tracker->CUBE, FACE_UP, FACE_FRONT, FACE_RIGHT);
+    const Cubie* UBR_CORNER = get_cubie_from_faces(&tracker->CUBE, FACE_UP, FACE_BACK, FACE_RIGHT);
+    const Cubie* UFL_CORNER = get_cubie_from_faces(&tracker->CUBE, FACE_UP, FACE_FRONT, FACE_LEFT);
+    const Cubie* UBL_CORNER = get_cubie_from_faces(&tracker->CUBE, FACE_UP, FACE_BACK, FACE_LEFT);
     if (!UFR_CORNER || !UBR_CORNER || !UFL_CORNER || !UBL_CORNER)
     {
         return 0;

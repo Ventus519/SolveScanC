@@ -40,10 +40,10 @@ int is_cross_complete_BEGINNERS(const BeginnersTracker* tracker)
     }
 
     const Colors CROSS_CENTER_COLOR = get_face_center_color(&tracker -> CUBE, FACE_DOWN);
-    const Cubie* CROSS_EDGE_F = get_cubie_at_position(&tracker -> CUBE, 0, -1, 1);
-    const Cubie* CROSS_EDGE_R = get_cubie_at_position(&tracker -> CUBE, 1, -1, 0);
-    const Cubie* CROSS_EDGE_B = get_cubie_at_position(&tracker -> CUBE, 0, -1, -1);
-    const Cubie* CROSS_EDGE_L = get_cubie_at_position(&tracker -> CUBE, -1, -1, 0);
+    const Cubie* CROSS_EDGE_F = get_cubie_from_faces(&tracker -> CUBE, FACE_DOWN, FACE_FRONT, FACES_NULL);
+    const Cubie* CROSS_EDGE_R = get_cubie_from_faces(&tracker -> CUBE, FACE_DOWN, FACES_NULL, FACE_RIGHT);
+    const Cubie* CROSS_EDGE_B = get_cubie_from_faces(&tracker -> CUBE, FACE_DOWN, FACE_BACK, FACES_NULL);
+    const Cubie* CROSS_EDGE_L = get_cubie_from_faces(&tracker -> CUBE, FACE_DOWN, FACES_NULL, FACE_LEFT);
 
     if (CROSS_EDGE_F -> FACE_COLORS[FACE_DOWN] != CROSS_CENTER_COLOR)
     {
@@ -95,10 +95,10 @@ int is_first_layer_corners_solved(const BeginnersTracker* tracker)
     const Colors CENTER_B_COLOR = get_face_center_color(&tracker -> CUBE, FACE_BACK);
     const Colors CENTER_L_COLOR = get_face_center_color(&tracker -> CUBE, FACE_LEFT);
 
-    const Cubie* CORNER_DFR = get_cubie_at_position(&tracker -> CUBE, 1, -1, 1);
-    const Cubie* CORNER_DFL = get_cubie_at_position(&tracker -> CUBE, -1, -1, 1);
-    const Cubie* CORNER_DBL = get_cubie_at_position(&tracker -> CUBE, -1, -1, -1);
-    const Cubie* CORNER_DBR = get_cubie_at_position(&tracker -> CUBE, 1, -1, -1);
+    const Cubie* CORNER_DFR = get_cubie_from_faces(&tracker -> CUBE, FACE_DOWN, FACE_FRONT, FACE_RIGHT);
+    const Cubie* CORNER_DFL = get_cubie_from_faces(&tracker -> CUBE, FACE_DOWN, FACE_FRONT, FACE_LEFT);
+    const Cubie* CORNER_DBL = get_cubie_from_faces(&tracker -> CUBE, FACE_DOWN, FACE_BACK, FACE_LEFT);
+    const Cubie* CORNER_DBR = get_cubie_from_faces(&tracker -> CUBE, FACE_DOWN, FACE_BACK, FACE_RIGHT);
 
     if (CORNER_DFR -> FACE_COLORS[FACE_DOWN] != CROSS_COLOR)
     {
@@ -167,10 +167,10 @@ int is_second_layer_edges_solved(const BeginnersTracker* tracker)
     const Colors CENTER_COLOR_B = get_face_center_color(&tracker -> CUBE, FACE_BACK);
     const Colors CENTER_COLOR_L = get_face_center_color(&tracker -> CUBE, FACE_LEFT);
 
-    const Cubie* EDGE_EFR = get_cubie_at_position(&tracker -> CUBE, 1, 0, 1);
-    const Cubie* EDGE_EBR = get_cubie_at_position(&tracker -> CUBE, 1, 0, -1);
-    const Cubie* EDGE_EBL = get_cubie_at_position(&tracker -> CUBE, -1, 0, -1);
-    const Cubie* EDGE_EFL = get_cubie_at_position(&tracker -> CUBE, -1, 0, 1);
+    const Cubie* EDGE_EFR = get_cubie_from_faces(&tracker -> CUBE, FACES_NULL, FACE_FRONT, FACE_RIGHT);
+    const Cubie* EDGE_EBR = get_cubie_from_faces(&tracker -> CUBE, FACES_NULL, FACE_BACK, FACE_RIGHT);
+    const Cubie* EDGE_EBL = get_cubie_from_faces(&tracker -> CUBE, FACES_NULL, FACE_BACK, FACE_LEFT);
+    const Cubie* EDGE_EFL = get_cubie_from_faces(&tracker -> CUBE, FACES_NULL, FACE_FRONT, FACE_LEFT);
 
     if (EDGE_EFR -> FACE_COLORS[FACE_FRONT] != CENTER_COLOR_F)
     {
@@ -221,10 +221,10 @@ int is_opposite_cross_oriented(const BeginnersTracker* tracker)
 
     const Colors OPPOSITE_CROSS_COLOR = get_face_center_color(&tracker -> CUBE, FACE_UP);
 
-    const Cubie* OPPOSITE_CROSS_EDGE_F = get_cubie_at_position(&tracker -> CUBE, 0, 1, 1);
-    const Cubie* OPPOSITE_CROSS_EDGE_R = get_cubie_at_position(&tracker -> CUBE, 1, 1, 0);
-    const Cubie* OPPOSITE_CROSS_EDGE_B = get_cubie_at_position(&tracker -> CUBE, 0, 1, -1);
-    const Cubie* OPPOSITE_CROSS_EDGE_L = get_cubie_at_position(&tracker -> CUBE, -1, 1, 0);
+    const Cubie* OPPOSITE_CROSS_EDGE_F = get_cubie_from_faces(&tracker -> CUBE, FACE_UP, FACE_FRONT, FACES_NULL);
+    const Cubie* OPPOSITE_CROSS_EDGE_R = get_cubie_from_faces(&tracker -> CUBE, FACE_UP, FACES_NULL, FACE_RIGHT);
+    const Cubie* OPPOSITE_CROSS_EDGE_B = get_cubie_from_faces(&tracker -> CUBE, FACE_UP, FACE_BACK, FACES_NULL);
+    const Cubie* OPPOSITE_CROSS_EDGE_L = get_cubie_from_faces(&tracker -> CUBE, FACE_UP, FACES_NULL, FACE_LEFT);
 
     if (OPPOSITE_CROSS_EDGE_F -> FACE_COLORS[FACE_UP] != OPPOSITE_CROSS_COLOR)
     {
@@ -253,10 +253,10 @@ int is_opposite_cross_solved(const BeginnersTracker* tracker)
         return 0;
     }
 
-    const Cubie* OPPOSITE_CROSS_EDGE_F = get_cubie_at_position(&tracker -> CUBE, 0, 1, 1);
-    const Cubie* OPPOSITE_CROSS_EDGE_R = get_cubie_at_position(&tracker -> CUBE, 1, 1, 0);
-    const Cubie* OPPOSITE_CROSS_EDGE_B = get_cubie_at_position(&tracker -> CUBE, 0, 1, -1);
-    const Cubie* OPPOSITE_CROSS_EDGE_L = get_cubie_at_position(&tracker -> CUBE, -1, 1, 0);
+    const Cubie* OPPOSITE_CROSS_EDGE_F = get_cubie_from_faces(&tracker -> CUBE, FACE_UP, FACE_FRONT, FACES_NULL);
+    const Cubie* OPPOSITE_CROSS_EDGE_R = get_cubie_from_faces(&tracker -> CUBE, FACE_UP, FACES_NULL, FACE_RIGHT);
+    const Cubie* OPPOSITE_CROSS_EDGE_B = get_cubie_from_faces(&tracker -> CUBE, FACE_UP, FACE_BACK, FACES_NULL);
+    const Cubie* OPPOSITE_CROSS_EDGE_L = get_cubie_from_faces(&tracker -> CUBE, FACE_UP, FACES_NULL, FACE_LEFT);
 
     const Colors COLOR_SCHEME[4] = {
         get_face_center_color(&tracker -> CUBE, FACE_FRONT),

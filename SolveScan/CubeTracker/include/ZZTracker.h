@@ -5,7 +5,7 @@
 #ifndef SOLVESCAN_ZZTRACKER_H
 #define SOLVESCAN_ZZTRACKER_H
 
-#include "Cube3/Cube3.h"
+#include "../Cube3/Cube3.h"
 
 typedef enum ZZ_MILESTONES
 {
@@ -22,6 +22,13 @@ typedef struct ZZ_TRACKER {
     ZZMilestones STEP;
     Cube CUBE;
 } ZZTracker;
+
+int initialize_ZZTracker(ZZTracker* tracker);
+void free_ZZTracker(ZZTracker* tracker);
+
+int is_edge_orientation_complete(const ZZTracker* tracker);
+
+int update_current_step_ZZ(ZZTracker* tracker);
 
 
 #endif //SOLVESCAN_ZZTRACKER_H

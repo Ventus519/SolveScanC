@@ -76,7 +76,8 @@ typedef enum FACES
     FACE_RIGHT,
     FACE_BACK,
     FACE_DOWN,
-    FACE_LEFT
+    FACE_LEFT,
+    FACES_NULL
 } Faces;
 
 typedef struct VEC3 {

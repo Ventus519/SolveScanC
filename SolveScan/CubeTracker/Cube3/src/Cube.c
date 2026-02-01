@@ -157,6 +157,39 @@ Cubie* get_cubie_at_position(const Cube* source, const int x, const int y, const
     return (source -> GRAND_CUBE[x+1][y+1][z+1]);
 }
 
+Cubie* get_cubie_from_faces(const Cube* source, const Faces FACE_UD, const Faces FACE_FB, const Faces FACE_RL)
+{
+    if (!source)
+    {
+        return NULL;
+    }
+    int x_offset, y_offset, z_offset;
+    switch (FACE_RL)
+    {
+        case FACE_RIGHT: x_offset = 1; break;
+        case FACE_LEFT: x_offset = -1; break;
+        case FACES_NULL: x_offset = 0; break;
+        default: return NULL;
+    }
+    switch (FACE_UD)
+    {
+        case FACE_UP: y_offset = 1; break;
+        case FACE_DOWN: y_offset = -1; break;
+        case FACES_NULL: y_offset = 0; break;
+        default: return NULL;
+    }
+
+    switch (FACE_FB)
+    {
+        case FACE_FRONT: z_offset = 1; break;
+        case FACE_BACK: z_offset = -1; break;
+        case FACES_NULL: z_offset = 0; break;
+        default: return NULL;
+    }
+
+    return (source -> GRAND_CUBE[x_offset+1][y_offset+1][z_offset+1]);
+}
+
 static int sync_cubie_positions(Cube* source)
 {
     if (!source)
@@ -200,7 +233,7 @@ static int sync_cubie_positions(Cube* source)
 }
 
 
-static int move_f(Cube* source, const int count, const int clockwise)
+static int move_f(Cube* source, const unsigned int count, const int clockwise)
 {
     if (!source)
     {
@@ -228,7 +261,7 @@ static int move_f(Cube* source, const int count, const int clockwise)
 
 }
 
-static int move_u(Cube* source, const int count, const int clockwise)
+static int move_u(Cube* source, const unsigned int count, const int clockwise)
 {
     if (!source)
     {
@@ -254,7 +287,7 @@ static int move_u(Cube* source, const int count, const int clockwise)
     return sync_cubie_positions(source);
 }
 
-static int move_r(Cube* source, const int count, const int clockwise)
+static int move_r(Cube* source, const unsigned int count, const int clockwise)
 {
     if (!source)
     {
@@ -280,7 +313,7 @@ static int move_r(Cube* source, const int count, const int clockwise)
     return sync_cubie_positions(source);
 }
 
-static int move_b(Cube* source, const int count, const int clockwise)
+static int move_b(Cube* source, const unsigned int count, const int clockwise)
 {
     if (!source)
     {
@@ -306,7 +339,7 @@ static int move_b(Cube* source, const int count, const int clockwise)
     return sync_cubie_positions(source);
 }
 
-static int move_d(Cube* source, const int count, const int clockwise)
+static int move_d(Cube* source, const unsigned int count, const int clockwise)
 {
     if (!source)
     {
@@ -332,7 +365,7 @@ static int move_d(Cube* source, const int count, const int clockwise)
     return sync_cubie_positions(source);
 }
 
-static int move_l(Cube* source, const int count, const int clockwise)
+static int move_l(Cube* source, const unsigned int count, const int clockwise)
 {
     if (!source)
     {
@@ -358,7 +391,7 @@ static int move_l(Cube* source, const int count, const int clockwise)
     return sync_cubie_positions(source);
 }
 
-static int slice_s(Cube* source, const int count, const int clockwise)
+static int slice_s(Cube* source, const unsigned int count, const int clockwise)
 {
     if (!source)
     {
@@ -384,7 +417,7 @@ static int slice_s(Cube* source, const int count, const int clockwise)
     return sync_cubie_positions(source);
 }
 
-static int slice_e(Cube* source, const int count, const int clockwise)
+static int slice_e(Cube* source, const unsigned int count, const int clockwise)
 {
     if (!source)
     {
@@ -410,7 +443,7 @@ static int slice_e(Cube* source, const int count, const int clockwise)
     return sync_cubie_positions(source);
 }
 
-static int slice_m(Cube* source, const int count, const int clockwise)
+static int slice_m(Cube* source, const unsigned int count, const int clockwise)
 {
     if (!source)
     {
@@ -436,7 +469,7 @@ static int slice_m(Cube* source, const int count, const int clockwise)
     return sync_cubie_positions(source);
 }
 
-static int rotate_about_axis(Cube* source, const Axis AXIS_OF_ROTATION, const int count, const int clockwise)
+static int rotate_about_axis(Cube* source, const Axis AXIS_OF_ROTATION, const unsigned int count, const int clockwise)
 {
     if (!source)
     {

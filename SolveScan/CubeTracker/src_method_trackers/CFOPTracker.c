@@ -37,10 +37,10 @@ int is_cross_complete_CFOP(const CFOPTracker* tracker)
     }
     const Colors CROSS_CENTER_COLOR = get_face_center_color(&tracker -> CUBE, FACE_DOWN);
 
-    const Cubie* CROSS_EDGE_F = get_cubie_at_position(&tracker -> CUBE, 0, -1, 1);
-    const Cubie* CROSS_EDGE_R = get_cubie_at_position(&tracker -> CUBE, 1, -1, 0);
-    const Cubie* CROSS_EDGE_B = get_cubie_at_position(&tracker -> CUBE, 0, -1, -1);
-    const Cubie* CROSS_EDGE_L = get_cubie_at_position(&tracker -> CUBE, -1, -1, 0);
+    const Cubie* CROSS_EDGE_F = get_cubie_from_faces(&tracker -> CUBE, FACE_DOWN, FACE_FRONT, FACES_NULL);
+    const Cubie* CROSS_EDGE_R = get_cubie_from_faces(&tracker -> CUBE, FACE_DOWN, FACES_NULL, FACE_RIGHT);
+    const Cubie* CROSS_EDGE_B = get_cubie_from_faces(&tracker -> CUBE, FACE_DOWN, FACE_BACK, FACES_NULL);
+    const Cubie* CROSS_EDGE_L = get_cubie_from_faces(&tracker -> CUBE, FACE_DOWN, FACES_NULL, FACE_LEFT);
 
     if (CROSS_EDGE_F -> FACE_COLORS[FACE_FRONT] != get_face_center_color(&tracker -> CUBE, FACE_FRONT))
     {
@@ -99,26 +99,17 @@ int is_f2l_pair_complete_CFOP(const CFOPTracker* tracker, const Faces FACE_FB, c
     {
         return 0;
     }
-    int z_offset = 0;
-    int x_offset = 0;
-    switch (FACE_FB)
-    {
-        case FACE_FRONT: z_offset = 1; break;
-        case FACE_BACK: z_offset = -1; break;
-        default: return 0;
-    }
-    switch (FACE_RL)
-    {
-        case FACE_RIGHT: x_offset = 1; break;
-        case FACE_LEFT: x_offset = -1; break;
-        default: return 0;
-    }
 
-    const Cubie* F2L_CORNER = get_cubie_at_position(&tracker -> CUBE, x_offset, -1, z_offset);
-    const Cubie* NEARBY_CROSS_EDGE_RL = get_cubie_at_position(&tracker -> CUBE, x_offset, -1, 0);
-    const Cubie* NEARBY_CROSS_EDGE_FB = get_cubie_at_position(&tracker -> CUBE, 0, -1, z_offset);
+    const Cubie* F2L_CORNER = get_cubie_from_faces(&tracker -> CUBE, FACE_DOWN, FACE_FB, FACE_RL);
+    const Cubie* NEARBY_CROSS_EDGE_RL = get_cubie_from_faces(&tracker -> CUBE, FACE_DOWN, FACES_NULL, FACE_RL);
+    const Cubie* NEARBY_CROSS_EDGE_FB = get_cubie_from_faces(&tracker -> CUBE, FACE_DOWN, FACE_FB, FACES_NULL);
 
-    const Cubie* F2L_EDGE = get_cubie_at_position(&tracker -> CUBE, x_offset, 0, z_offset);
+    const Cubie* F2L_EDGE = get_cubie_from_faces(&tracker -> CUBE, FACES_NULL, FACE_FB, FACE_RL);
+
+    if (!F2L_CORNER || !NEARBY_CROSS_EDGE_FB || !NEARBY_CROSS_EDGE_RL || !F2L_EDGE)
+    {
+        return 0;
+    }
 
     if (F2L_CORNER -> FACE_COLORS[FACE_DOWN] != get_face_center_color(&tracker -> CUBE, FACE_DOWN))
     {

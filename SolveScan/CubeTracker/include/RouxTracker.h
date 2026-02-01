@@ -34,7 +34,7 @@ int initialize_RouxTracker(RouxTracker* tracker);
 void free_RouxTracker(RouxTracker* tracker);
 
 
-int is_ROUX_block_complete(const RouxTracker* tracker, Faces FACE_LEFT_OR_FACE_RIGHT);
+int is_ROUX_block_complete(const RouxTracker* tracker, Faces FACE_RL);
 
 int is_first_block_complete(const RouxTracker* tracker);
 int is_second_block_complete(const RouxTracker* tracker);
