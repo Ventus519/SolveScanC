@@ -190,6 +190,61 @@ Cubie* get_cubie_from_faces(const Cube* source, const Faces FACE_UD, const Faces
     return (source -> GRAND_CUBE[x_offset+1][y_offset+1][z_offset+1]);
 }
 
+int cubie_to_face_notation(const Cubie* source, Faces* FACE_UD_DEST, Faces* FACE_FB_DEST, Faces* FACE_RL_DEST)
+{
+    if (!source || !FACE_UD_DEST || !FACE_FB_DEST || !FACE_RL_DEST)
+    {
+        return 1;
+    }
+    Faces FACE_UD = FACES_NULL;
+    Faces FACE_FB = FACES_NULL;
+    Faces FACE_RL = FACES_NULL;
+
+    if (source -> FACE_COLORS[FACE_UP] != COLORS_NULL)
+    {
+        FACE_UD = FACE_UP;
+    }
+    if (source -> FACE_COLORS[FACE_DOWN] != COLORS_NULL)
+    {
+        if (FACE_UD != FACES_NULL)
+        {
+            return 1;
+        }
+        FACE_UD = FACE_DOWN;
+    }
+
+    if (source -> FACE_COLORS[FACE_FRONT] != COLORS_NULL)
+    {
+        FACE_FB = FACE_FRONT;
+    }
+    if (source -> FACE_COLORS[FACE_BACK] != COLORS_NULL)
+    {
+        if (FACE_FB != FACES_NULL)
+        {
+            return 1;
+        }
+        FACE_FB = FACE_BACK;
+    }
+
+    if (source -> FACE_COLORS[FACE_RIGHT] != COLORS_NULL)
+    {
+        FACE_RL = FACE_RIGHT;
+    }
+    if (source -> FACE_COLORS[FACE_LEFT] != COLORS_NULL)
+    {
+        if (FACE_RL != FACES_NULL)
+        {
+            return 1;
+        }
+        FACE_RL = FACE_LEFT;
+    }
+
+    *FACE_UD_DEST = FACE_UD;
+    *FACE_FB_DEST = FACE_FB;
+    *FACE_RL_DEST = FACE_RL;
+    return 0;
+}
+
 static int sync_cubie_positions(Cube* source)
 {
     if (!source)

@@ -101,7 +101,8 @@ Colors get_face_center_color(const Cube* source, Faces FACE);
  * @return Borrowed Cubie* that represents the Cubie at the position specified in the Cube provided.
  *         This Cubie* must not be freed.
  *
- * On the event that invalid coordinates are provided, or that the Cube provided was invalid, NULL will be returned.
+ * On the event that invalid coordinates are provided, or that the Cube pointer provided was invalid,
+ * NULL will be returned.
  **/
 Cubie* get_cubie_at_position(const Cube* source, int x, int y, int z);
 
@@ -116,19 +117,60 @@ Cubie* get_cubie_at_position(const Cube* source, int x, int y, int z);
  * of the Front face, Up face, and Right face would be called the UFR corner (the U is for U-face, F for F-face, and R
  * for R-face).
  *
+ * Using FACES_NULL for all Face arguments will retrieve the core of the Cube provided.
+ *
  * @param source The cube used to borrow the returned Cubie*
- * @param FACE_UD The face along the y-axis that the Cubie lies on. Accepts only: FACE_UP, FACE_DOWN, FACE_NULL
- * @param FACE_FB The face along the z-axis that the Cubie lies on. Accepts only: FACE_FRONT, FACE_BACK, FACE_NULL
- * @param FACE_RL The face along the x-axis that the Cubie lies on. Accepts only: FACE_RIGHT, FACE_LEFT, FACE_NULL
+ * @param FACE_UD The face along the y-axis that the Cubie lies on. Accepts only: FACE_UP, FACE_DOWN, FACES_NULL
+ * @param FACE_FB The face along the z-axis that the Cubie lies on. Accepts only: FACE_FRONT, FACE_BACK, FACES_NULL
+ * @param FACE_RL The face along the x-axis that the Cubie lies on. Accepts only: FACE_RIGHT, FACE_LEFT, FACES_NULL
  *
  * @return Borrowed Cubie* that represents the Cubie at the intersection of the faces provided.
  *         This Cubie* must not be freed.
  *
- * On the event that an invalid face combination is provided, or that the Cube provided was invalid,
+ * On the event that an invalid face combination is provided, or that the Cube pointer provided was invalid,
  * NULL will be returned.
  **/
 Cubie* get_cubie_from_faces(const Cube* source, Faces FACE_UD, Faces FACE_FB, Faces FACE_RL);
 
+
+/**
+ * Converts a Cubie* into face notation. Face notation is defined to use the faces that are colored. A face is colored
+ * if its color is not COLORS_NULL. If none of the faces on a given axis are colored, then the corresponding destination
+ * will be set to FACES_NULL.
+ *
+ * As an example:
+ * @code
+ *      Cube cube;
+ *      if (initialize_cube(&cube))
+ *      {
+ *          //error handling
+ *      }
+ *      Cubie* UFR_PIECE = get_cubie_from_position(&cube, 1, 1, 1);
+ *
+ *      Faces FACE_UD = FACES_NULL;
+ *      Faces FACE_FB = FACES_NULL;
+ *      Faces FACE_RL = FACES_NULL;
+ *
+ *      if (cubie_to_face_notation(UFR_PIECE, &FACE_UD, &FACE_FB, &FACE_RL))
+ *      {
+ *         //error handling
+ *      }
+ *
+ *      //FACE_UD is set to FACE_UP
+ *      //FACE_FB is set to FACE_FRONT
+ *      //FACE_RL is set to FACE_RIGHT
+ * @endcode
+ *
+ * @param source The Cubie to convert to face notation
+ * @param FACE_UD_DEST  The destination to write which face on the y-axis is colored
+ * @param FACE_FB_DEST  The destination to write which face on the z-axis is colored
+ * @param FACE_RL_DEST  The destination to write which face on the x-axis is colored
+ * @return Error code: 0 on success, 1 on failure (includes NULL pointers and invalid cubies).
+ *
+ * Cubies are considered invalid if 2 different faces on the same axis are colored. This is because it is impossible
+ * for a cubie to have that color scheme while being a part of a larger cube.
+ */
+int cubie_to_face_notation(const Cubie* source, Faces* FACE_UD_DEST, Faces* FACE_FB_DEST, Faces* FACE_RL_DEST);
 
 /**
  * Applies the move specified by MOVE_SPEC onto the Cube provided. Unlike on the cubie level, this results in the
@@ -142,7 +184,6 @@ Cubie* get_cubie_from_faces(const Cube* source, Faces FACE_UD, Faces FACE_FB, Fa
  * @return Error Code: 0 on success, 1 on failure
  **/
 int apply_move_from_spec(Cube* source, const MoveSpec* MOVE_SPEC);
-
 
 /**
  * Determines if a Cube is solved, regardless of orientation.
