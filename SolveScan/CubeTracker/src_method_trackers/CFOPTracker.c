@@ -79,7 +79,7 @@ int is_cross_complete_CFOP(const CFOPTracker* tracker)
     return 1;
 }
 
-int count_complete_f2l_pairs(const CFOPTracker* tracker)
+int count_complete_f2l_pairs_CFOP(const CFOPTracker* tracker)
 {
     if (!tracker)
     {
@@ -213,7 +213,7 @@ int update_current_step_CFOP(CFOPTracker* tracker, const int continue_scramble, 
     {
         return 1;
     }
-    const int completed_pairs = count_complete_f2l_pairs(tracker);
+    const int completed_pairs = count_complete_f2l_pairs_CFOP(tracker);
     if (CURRENT_STEP == CFOP_F2L_1 || completed_pairs == 0)
     {
         tracker -> STEP = CFOP_F2L_1;
