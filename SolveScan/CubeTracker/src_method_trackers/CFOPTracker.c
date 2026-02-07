@@ -135,7 +135,7 @@ int is_f2l_pair_complete_CFOP(const CFOPTracker* tracker, const Faces FACE_FB, c
     return 1;
 }
 
-int update_completed_f2l_pairs(CFOPTracker* tracker)
+int update_completed_f2l_pairs_CFOP(CFOPTracker* tracker)
 {
     if (!tracker)
     {
@@ -209,32 +209,32 @@ int update_current_step_CFOP(CFOPTracker* tracker, const int continue_scramble, 
     {
         tracker -> STEP = CFOP_F2L_1;
     }
-    if (update_completed_f2l_pairs(tracker))
+    if (update_completed_f2l_pairs_CFOP(tracker))
     {
         return 1;
     }
     const int completed_pairs = count_complete_f2l_pairs_CFOP(tracker);
-    if (CURRENT_STEP == CFOP_F2L_1 || completed_pairs == 0)
+    if (CURRENT_STEP == CFOP_F2L_1 || completed_pairs == 0 && tracker -> STEP == CFOP_F2L_1)
     {
         tracker -> STEP = CFOP_F2L_1;
     }
-    if (CURRENT_STEP == CFOP_F2L_2 || completed_pairs == 1)
+    if (CURRENT_STEP == CFOP_F2L_2 || completed_pairs == 1 && tracker -> STEP == CFOP_F2L_1)
     {
         tracker -> STEP = CFOP_F2L_2;
     }
-    if (CURRENT_STEP == CFOP_F2L_3 || completed_pairs == 2)
+    if (CURRENT_STEP == CFOP_F2L_3 || completed_pairs == 2 && tracker -> STEP == CFOP_F2L_2)
     {
         tracker -> STEP = CFOP_F2L_3;
     }
-    if (CURRENT_STEP == CFOP_F2L || completed_pairs == 3)
+    if (CURRENT_STEP == CFOP_F2L || completed_pairs == 3 && tracker -> STEP == CFOP_F2L_3)
     {
         tracker -> STEP = CFOP_F2L;
     }
-    if (CURRENT_STEP == CFOP_OLL || completed_pairs == 4)
+    if (CURRENT_STEP == CFOP_OLL || completed_pairs == 4 && tracker -> STEP == CFOP_F2L)
     {
         tracker -> STEP = CFOP_OLL;
     }
-    if (tracker -> STEP == CFOP_OLL && is_oll_complete(tracker))
+    if (CURRENT_STEP == CFOP_PLL ||tracker -> STEP == CFOP_OLL && is_oll_complete(tracker))
     {
         tracker -> STEP = CFOP_PLL;
     }

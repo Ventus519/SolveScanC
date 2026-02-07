@@ -73,7 +73,17 @@ int initialize_CubeTracker(CubeTracker* tracker, const char* file_path, const En
                 strcat(RECONSTRUCT_TEST, "ROUX\n\n");
                 break;
             }
-        case ZZ: break;
+        case ZZ:
+            {
+                ZZTracker* TRACK_ZZ = malloc(sizeof(ZZTracker));
+                if (initialize_ZZTracker(TRACK_ZZ))
+                {
+                    goto ENABLED_TRACKER_FAIL;
+                }
+                tracker -> tracker_ZZ = TRACK_ZZ;
+                strcat(RECONSTRUCT_TEST, "ZZ\n\n");
+                break;
+            }
     }
     strcat(RECONSTRUCT_TEST, "SCRAMBLE: ");
     tracker -> reconstruction = RECONSTRUCT_TEST;
@@ -102,6 +112,7 @@ int is_invalid_CubeTracker(const CubeTracker* tracker)
         case BEGINNERS: return (!tracker -> tracker_BEGINNERS);
         case CFOP: return (!tracker -> tracker_CFOP);
         case ROUX: return (!tracker -> tracker_ROUX);
+        case ZZ: return (!tracker -> tracker_ZZ);
         default: return 0;
     }
 }
@@ -149,7 +160,7 @@ int is_subtracker_cube_solved(const CubeTracker* tracker)
         case BEGINNERS: return is_solved(&tracker -> tracker_BEGINNERS -> CUBE);
         case CFOP: return is_solved(&tracker -> tracker_CFOP -> CUBE);
         case ROUX: return is_solved(&tracker -> tracker_ROUX -> CUBE);
-        case ZZ: break;
+        case ZZ: return is_solved(&tracker -> tracker_ZZ -> CUBE);
     }
     return 0;
 }
@@ -195,7 +206,7 @@ int apply_move_to_subtracker_cubes(CubeTracker* tracker, const MoveSpec* MOVE_SP
         }
         case CFOP: apply_move_error_code = apply_move_from_spec(&tracker -> tracker_CFOP -> CUBE, MOVE_SPEC); break;
         case ROUX: apply_move_error_code = apply_move_from_spec(&tracker -> tracker_ROUX -> CUBE, MOVE_SPEC); break;
-        case ZZ: return 1;
+        case ZZ: apply_move_error_code = apply_move_from_spec(&tracker -> tracker_ZZ -> CUBE, MOVE_SPEC); break;
     }
     if (apply_move_error_code != 0)
     {
@@ -258,7 +269,20 @@ int track_move_from_spec(CubeTracker* tracker, const MoveSpec* MOVE_SPEC)
             }
             break;
         }
-        case ZZ: break;
+        case ZZ:
+        {
+            const ZZMilestones CURRENT_STEP = get_current_ZZ_step(tracker);
+            if (CURRENT_STEP == ZZ_SCRAMBLE)
+            {
+                return (apply_move_to_subtracker_cubes(tracker, MOVE_SPEC) ||
+                    push_move_to_MoveStack(tracker -> p_MOVES_APPLIED, MOVE_SPEC));
+            }
+            if (CURRENT_STEP == ZZ_INSPECT && isMoveSpecRotation(MOVE_SPEC))
+            {
+                continue_inspect = 1;
+            }
+            break;
+        }
     }
 
     if (update_reconstruction(tracker, continue_inspect))
@@ -352,6 +376,7 @@ int update_reconstruction(CubeTracker* tracker, const int continue_inspect)
     const CFOPMilestones CURRENT_CFOP_STEP = get_current_CFOP_step(tracker);
     const RouxMilestones CURRENT_ROUX_STEP = get_current_ROUX_step(tracker);
     const BeginnersMilestones CURRENT_BEGINNERS_STEP = get_current_BEGINNERS_step(tracker);
+    const ZZMilestones CURRENT_ZZ_STEP = get_current_ZZ_step(tracker);
 
     if (update_current_step(tracker, 0, continue_inspect))
     {
@@ -392,57 +417,84 @@ int update_reconstruction(CubeTracker* tracker, const int continue_inspect)
 
         }
         case CFOP:
+        {
+            const CFOPMilestones NEW_STEP = get_current_CFOP_step(tracker);
+            if (CURRENT_CFOP_STEP == NEW_STEP)
             {
-                const CFOPMilestones NEW_STEP = get_current_CFOP_step(tracker);
-                if (CURRENT_CFOP_STEP == NEW_STEP)
-                {
-                    break;
-                }
-                switch (NEW_STEP)
-                {
-                    case CFOP_INSPECT: return append_to_reconstruction(tracker, "\nINSPECT: ");
-                    case CFOP_CROSS: return append_to_reconstruction(tracker, "\nCROSS: ");
-                    case CFOP_F2L_1: return append_to_reconstruction(tracker, "\n(F2L) Pair 1: ");
-                    case CFOP_F2L_2: return append_to_reconstruction(tracker, "\n(F2L) Pair 2: ");
-                    case CFOP_F2L_3: return append_to_reconstruction(tracker, "\n(F2L) Pair 3: ");
-                    case CFOP_F2L: return append_to_reconstruction(tracker, "\n(F2L) Pair 4: ");
-                    case CFOP_OLL: return append_to_reconstruction(tracker, "\nOLL: ");
-                    case CFOP_PLL: return append_to_reconstruction(tracker, "\nPLL: ");
-                    case CFOP_SOLVED:
-                    {
-                        char entry[36];
-                        snprintf(entry, sizeof entry, "\nSOLVED: %zu MOVES",
-                            tracker -> p_MOVES_APPLIED -> MOVE_SEQUENCE_LENGTH - tracker -> SCRAMBLE_MOVE_LENGTH);
-                        return append_to_reconstruction(tracker, entry);
-                    }
-                    default: return 1;
-                }
+                break;
             }
+            switch (NEW_STEP)
+            {
+                case CFOP_INSPECT: return append_to_reconstruction(tracker, "\nINSPECT: ");
+                case CFOP_CROSS: return append_to_reconstruction(tracker, "\nCROSS: ");
+                case CFOP_F2L_1: return append_to_reconstruction(tracker, "\n(CFOP F2L) Pair 1: ");
+                case CFOP_F2L_2: return append_to_reconstruction(tracker, "\n(CFOP F2L) Pair 2: ");
+                case CFOP_F2L_3: return append_to_reconstruction(tracker, "\n(CFOP F2L) Pair 3: ");
+                case CFOP_F2L: return append_to_reconstruction(tracker, "\n(CFOP F2L) Pair 4: ");
+                case CFOP_OLL: return append_to_reconstruction(tracker, "\nOLL: ");
+                case CFOP_PLL: return append_to_reconstruction(tracker, "\nPLL: ");
+                case CFOP_SOLVED:
+                {
+                    char entry[36];
+                    snprintf(entry, sizeof entry, "\nSOLVED: %zu MOVES",
+                        tracker -> p_MOVES_APPLIED -> MOVE_SEQUENCE_LENGTH - tracker -> SCRAMBLE_MOVE_LENGTH);
+                    return append_to_reconstruction(tracker, entry);
+                }
+                default: return 1;
+            }
+        }
         case ROUX:
+        {
+            const RouxMilestones NEW_STEP = get_current_ROUX_step(tracker);
+            if (CURRENT_ROUX_STEP == NEW_STEP)
             {
-                const RouxMilestones NEW_STEP = get_current_ROUX_step(tracker);
-                if (CURRENT_ROUX_STEP == NEW_STEP)
-                {
-                    break;
-                }
-                switch (NEW_STEP)
-                {
-                    case ROUX_INSPECT: return append_to_reconstruction(tracker, "\nINSPECT: ");
-                    case ROUX_FIRST_BLOCK: return append_to_reconstruction(tracker, "\nFB: ");
-                    case ROUX_SECOND_BLOCK: return append_to_reconstruction(tracker, "\nSB: ");
-                    case ROUX_LAST_LAYER_CORNERS: return append_to_reconstruction(tracker, "\nCMLL: ");
-                    case ROUX_LAST_SIX_EDGES: return append_to_reconstruction(tracker, "\nL6E: ");
-                    case ROUX_SOLVED:
-                    {
-                        char entry[36];
-                        snprintf(entry, sizeof entry, "\nSOLVED: %zu MOVES",
-                            tracker -> p_MOVES_APPLIED -> MOVE_SEQUENCE_LENGTH - tracker -> SCRAMBLE_MOVE_LENGTH);
-                        return append_to_reconstruction(tracker, entry);
-                    }
-                    default: return 1;
-                }
+                break;
             }
-        case ZZ: return 1;
+            switch (NEW_STEP)
+            {
+                case ROUX_INSPECT: return append_to_reconstruction(tracker, "\nINSPECT: ");
+                case ROUX_FIRST_BLOCK: return append_to_reconstruction(tracker, "\nFB: ");
+                case ROUX_SECOND_BLOCK: return append_to_reconstruction(tracker, "\nSB: ");
+                case ROUX_LAST_LAYER_CORNERS: return append_to_reconstruction(tracker, "\nCMLL: ");
+                case ROUX_LAST_SIX_EDGES: return append_to_reconstruction(tracker, "\nL6E: ");
+                case ROUX_SOLVED:
+                {
+                    char entry[36];
+                    snprintf(entry, sizeof entry, "\nSOLVED: %zu MOVES",
+                        tracker -> p_MOVES_APPLIED -> MOVE_SEQUENCE_LENGTH - tracker -> SCRAMBLE_MOVE_LENGTH);
+                    return append_to_reconstruction(tracker, entry);
+                }
+                default: return 1;
+            }
+        }
+        case ZZ:
+        {
+            const ZZMilestones NEW_STEP = get_current_ZZ_step(tracker);
+            if (CURRENT_ZZ_STEP == NEW_STEP)
+            {
+                break;
+            }
+            switch (NEW_STEP)
+            {
+                case ZZ_INSPECT: return append_to_reconstruction(tracker, "\nINSPECT: ");
+                case ZZ_EO_CROSS: return append_to_reconstruction(tracker, "\nEO CROSS: ");
+                case ZZ_F2L_1: return append_to_reconstruction(tracker, "\n (ZZ F2L) Pair 1: ");
+                case ZZ_F2L_2: return append_to_reconstruction(tracker, "\n (ZZ F2L) Pair 2: ");
+                case ZZ_F2L_3: return append_to_reconstruction(tracker, "\n (ZZ F2L) Pair 3: ");
+                case ZZ_F2L: return append_to_reconstruction(tracker, "\n (ZZ F2L) Pair 4: ");
+                case ZZ_OCLL: return append_to_reconstruction(tracker, "\nOCLL: ");
+                case ZZ_PLL: return append_to_reconstruction(tracker, "\nPLL: ");
+                case ZZ_SOLVED:
+                {
+                    char entry[36];
+                    snprintf(entry, sizeof entry, "\nSOLVED: %zu MOVES",
+                        tracker -> p_MOVES_APPLIED -> MOVE_SEQUENCE_LENGTH - tracker -> SCRAMBLE_MOVE_LENGTH);
+                    return append_to_reconstruction(tracker, entry);
+                }
+                default: return 1;
+
+            }
+        }
     }
 
     return 0;
@@ -460,7 +512,7 @@ int update_current_step(CubeTracker* tracker, const int continue_scramble, const
             continue_inspect);
         case CFOP: return update_current_step_CFOP(tracker -> tracker_CFOP, continue_scramble, continue_inspect);
         case ROUX: return update_current_step_ROUX(tracker -> tracker_ROUX, continue_scramble, continue_inspect);
-        case ZZ: return 1;
+        case ZZ: return update_current_step_ZZ(tracker -> tracker_ZZ, continue_scramble, continue_inspect);
         default: return 1;
     }
 }
@@ -502,4 +554,17 @@ BeginnersMilestones get_current_BEGINNERS_step(const CubeTracker* tracker)
         return BEGINNERS_MILESTONE_NULL;
     }
     return tracker -> tracker_BEGINNERS -> STEP;
+}
+
+ZZMilestones get_current_ZZ_step(const CubeTracker* tracker)
+{
+    if (is_invalid_CubeTracker(tracker))
+    {
+        return ZZ_MILESTONE_NULL;
+    }
+    if (tracker -> ENABLED != ZZ)
+    {
+        return ZZ_MILESTONE_NULL;
+    }
+    return tracker -> tracker_ZZ -> STEP;
 }

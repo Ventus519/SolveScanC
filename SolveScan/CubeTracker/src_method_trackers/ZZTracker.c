@@ -111,7 +111,7 @@ int is_edge_orientation_complete(const ZZTracker* tracker)
 
     const Cube* TRACKED_CUBE = &tracker -> CUBE;
     const Colors COLOR_F = get_face_center_color(TRACKED_CUBE, FACE_FRONT);
-    const Colors COLOR_U = get_face_center_color(TRACKED_CUBE, FACE_FRONT);
+    const Colors COLOR_U = get_face_center_color(TRACKED_CUBE, FACE_UP);
 
     for (int x = -1; x < 2; x++)
     {
@@ -246,7 +246,7 @@ int is_f2l_pair_complete_ZZ(const ZZTracker* tracker, const Faces FACE_FB, const
     return 1;
 }
 
-int update_completed_f2l_pairs(ZZTracker* tracker)
+int update_completed_f2l_pairs_ZZ(ZZTracker* tracker)
 {
     if (!tracker)
     {
@@ -296,5 +296,77 @@ int is_ocll_complete(const ZZTracker* tracker)
     }
 
     return 1;
+}
+
+int update_current_step_ZZ(ZZTracker* tracker, const int continue_scramble, const int continue_inspect)
+{
+    if (!tracker)
+    {
+        return 1;
+    }
+
+    const ZZMilestones CURRENT_STEP = tracker -> STEP;
+    if (CURRENT_STEP == ZZ_MILESTONE_NULL)
+    {
+        return 1;
+    }
+
+    if (continue_scramble)
+    {
+        tracker -> STEP = ZZ_SCRAMBLE;
+        return 0;
+    }
+    if (continue_inspect)
+    {
+        tracker -> STEP = ZZ_INSPECT;
+        return 0;
+    }
+    tracker -> STEP = ZZ_EO_CROSS;
+    if (is_edge_orientation_complete(tracker) && is_cross_complete_ZZ(tracker))
+    {
+        tracker -> STEP = ZZ_F2L_1;
+    }
+    if (update_completed_f2l_pairs_ZZ(tracker))
+    {
+        return 1;
+    }
+    const int completed_pairs = count_complete_f2l_pairs_ZZ(tracker);
+    if (!is_edge_orientation_complete(tracker) && (CURRENT_STEP < ZZ_OCLL) && (CURRENT_STEP > ZZ_INSPECT))
+    {
+        tracker -> STEP = ZZ_EO_CROSS;
+        return 0;
+    }
+
+    if (CURRENT_STEP == ZZ_F2L_1 || completed_pairs == 0 && tracker -> STEP == ZZ_F2L_1)
+    {
+        tracker -> STEP = ZZ_F2L_1;
+    }
+    if (CURRENT_STEP == ZZ_F2L_2 || completed_pairs == 1 && tracker -> STEP == ZZ_F2L_1)
+    {
+        tracker -> STEP = ZZ_F2L_2;
+    }
+    if (CURRENT_STEP == ZZ_F2L_3 || completed_pairs == 2 && tracker -> STEP == ZZ_F2L_2)
+    {
+        tracker -> STEP = ZZ_F2L_3;
+    }
+    if (CURRENT_STEP == ZZ_F2L || completed_pairs == 3 && tracker -> STEP == ZZ_F2L_3)
+    {
+        tracker -> STEP = ZZ_F2L;
+    }
+    if (CURRENT_STEP == ZZ_OCLL || completed_pairs == 4 && tracker -> STEP == ZZ_F2L)
+    {
+        tracker -> STEP = ZZ_OCLL;
+    }
+
+    if (CURRENT_STEP == ZZ_PLL || tracker -> STEP == ZZ_OCLL && is_ocll_complete(tracker))
+    {
+        tracker -> STEP = ZZ_PLL;
+    }
+
+    if (is_solved(&tracker -> CUBE))
+    {
+        tracker -> STEP = ZZ_SOLVED;
+    }
+    return 0;
 }
 

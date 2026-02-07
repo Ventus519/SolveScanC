@@ -47,7 +47,7 @@ void free_CFOPTracker(CFOPTracker* tracker);
 int is_cross_complete_CFOP(const CFOPTracker* tracker);
 int count_complete_f2l_pairs_CFOP(const CFOPTracker* tracker);
 int is_f2l_pair_complete_CFOP(const CFOPTracker* tracker, Faces FACE_FB, Faces FACE_RL);
-int update_completed_f2l_pairs(CFOPTracker* tracker);
+int update_completed_f2l_pairs_CFOP(CFOPTracker* tracker);
 
 int is_oll_complete(const CFOPTracker* tracker);
 

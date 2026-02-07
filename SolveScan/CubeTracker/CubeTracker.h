@@ -8,6 +8,7 @@
 #include "include/RouxTracker.h"
 #include "include/CFOPTracker.h"
 #include "include/BeginnersTracker.h"
+#include "include/ZZTracker.h"
 
 typedef enum TRACKERS_ENABLED {
     BEGINNERS,
@@ -28,6 +29,7 @@ typedef struct CUBE_TRACKER {
     RouxTracker* tracker_ROUX;
     CFOPTracker* tracker_CFOP;
     BeginnersTracker* tracker_BEGINNERS;
+    ZZTracker* tracker_ZZ;
 
 
     char* save_file_path;
@@ -56,5 +58,6 @@ int update_current_step(CubeTracker* tracker, int continue_scramble, int continu
 CFOPMilestones get_current_CFOP_step(const CubeTracker* tracker);
 RouxMilestones get_current_ROUX_step(const CubeTracker* tracker);
 BeginnersMilestones get_current_BEGINNERS_step(const CubeTracker* tracker);
+ZZMilestones get_current_ZZ_step(const CubeTracker* tracker);
 
 #endif //SOLVESCAN_CUBETRACKER_H
