@@ -33,14 +33,13 @@ typedef struct ZZ_TRACKER {
      * bit 1: FR F2L pair
      * bit 0: FL F2L pair
      *
-     * A bit value of 1 represents that the pair was solved at some point during the solve
      */
     uint8_t f2l_pairs_completed;
 
     Cube CUBE;
 } ZZTracker;
 
-int initialize_ZZTracker(ZZTracker* tracker);
+int initialize_ZZTracker(ZZTracker* tracker); //all ZZ trackers are heap allocated
 void free_ZZTracker(ZZTracker* tracker);
 
 int is_edge_orientation_complete(const ZZTracker* tracker);

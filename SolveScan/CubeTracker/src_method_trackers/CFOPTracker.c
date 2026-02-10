@@ -36,11 +36,20 @@ int is_cross_complete_CFOP(const CFOPTracker* tracker)
         return 0;
     }
     const Colors CROSS_CENTER_COLOR = get_face_center_color(&tracker -> CUBE, FACE_DOWN);
+    if (CROSS_CENTER_COLOR == COLORS_NULL)
+    {
+        return 0;
+    }
 
     const Cubie* CROSS_EDGE_F = get_cubie_from_faces(&tracker -> CUBE, FACE_DOWN, FACE_FRONT, FACES_NULL);
     const Cubie* CROSS_EDGE_R = get_cubie_from_faces(&tracker -> CUBE, FACE_DOWN, FACES_NULL, FACE_RIGHT);
     const Cubie* CROSS_EDGE_B = get_cubie_from_faces(&tracker -> CUBE, FACE_DOWN, FACE_BACK, FACES_NULL);
     const Cubie* CROSS_EDGE_L = get_cubie_from_faces(&tracker -> CUBE, FACE_DOWN, FACES_NULL, FACE_LEFT);
+
+    if (!CROSS_EDGE_F || !CROSS_EDGE_R || !CROSS_EDGE_B || !CROSS_EDGE_L)
+    {
+        return 0;
+    }
 
     if (CROSS_EDGE_F -> FACE_COLORS[FACE_FRONT] != get_face_center_color(&tracker -> CUBE, FACE_FRONT))
     {
@@ -169,11 +178,19 @@ int is_oll_complete(const CFOPTracker* tracker)
         return 0;
     }
     const Colors U_FACE_CENTER_COLOR = get_face_center_color(&tracker -> CUBE, FACE_UP);
+    if (U_FACE_CENTER_COLOR == COLORS_NULL)
+    {
+        return 0;
+    }
     for (int x = -1; x < 2; x++)
     {
         for (int z = -1; z < 2; z++)
         {
             const Cubie* TEST = get_cubie_at_position(&tracker -> CUBE, x, 1, z);
+            if (!TEST)
+            {
+                return 0;
+            }
             if (TEST -> FACE_COLORS[FACE_UP] != U_FACE_CENTER_COLOR)
             {
                 return 0;

@@ -247,10 +247,6 @@ int cubie_to_face_notation(const Cubie* source, Faces* FACE_UD_DEST, Faces* FACE
 
 static int sync_cubie_positions(Cube* source)
 {
-    if (!source)
-    {
-        return 1;
-    }
     Cubie* RESYNCED_CUBIES[3][3][3];
     for (int i = 0; i < 3; i++)
     {
@@ -290,10 +286,6 @@ static int sync_cubie_positions(Cube* source)
 
 static int move_f(Cube* source, const unsigned int count, const int clockwise)
 {
-    if (!source)
-    {
-        return 1;
-    }
 
     MoveSpec FRONT_SPEC;
     FRONT_SPEC.MOVE = MOVE_FRONT;
@@ -318,10 +310,6 @@ static int move_f(Cube* source, const unsigned int count, const int clockwise)
 
 static int move_u(Cube* source, const unsigned int count, const int clockwise)
 {
-    if (!source)
-    {
-        return 1;
-    }
 
     MoveSpec UP_SPEC;
     UP_SPEC.MOVE = MOVE_UP;
@@ -344,10 +332,6 @@ static int move_u(Cube* source, const unsigned int count, const int clockwise)
 
 static int move_r(Cube* source, const unsigned int count, const int clockwise)
 {
-    if (!source)
-    {
-        return 1;
-    }
 
     MoveSpec RIGHT_SPEC;
     RIGHT_SPEC.MOVE = MOVE_RIGHT;
@@ -370,10 +354,6 @@ static int move_r(Cube* source, const unsigned int count, const int clockwise)
 
 static int move_b(Cube* source, const unsigned int count, const int clockwise)
 {
-    if (!source)
-    {
-        return 1;
-    }
 
     MoveSpec BACK_SPEC;
     BACK_SPEC.MOVE = MOVE_BACK;
@@ -396,10 +376,6 @@ static int move_b(Cube* source, const unsigned int count, const int clockwise)
 
 static int move_d(Cube* source, const unsigned int count, const int clockwise)
 {
-    if (!source)
-    {
-        return 1;
-    }
 
     MoveSpec DOWN_SPEC;
     DOWN_SPEC.MOVE = MOVE_DOWN;
@@ -422,10 +398,6 @@ static int move_d(Cube* source, const unsigned int count, const int clockwise)
 
 static int move_l(Cube* source, const unsigned int count, const int clockwise)
 {
-    if (!source)
-    {
-        return 1;
-    }
 
     MoveSpec LEFT_SPEC;
     LEFT_SPEC.MOVE = MOVE_LEFT;
@@ -448,10 +420,6 @@ static int move_l(Cube* source, const unsigned int count, const int clockwise)
 
 static int slice_s(Cube* source, const unsigned int count, const int clockwise)
 {
-    if (!source)
-    {
-        return 1;
-    }
 
     MoveSpec S_SLICE_SPEC;
     S_SLICE_SPEC.MOVE = MOVE_FRONT;
@@ -474,10 +442,6 @@ static int slice_s(Cube* source, const unsigned int count, const int clockwise)
 
 static int slice_e(Cube* source, const unsigned int count, const int clockwise)
 {
-    if (!source)
-    {
-        return 1;
-    }
 
     MoveSpec E_SLICE_SPEC;
     E_SLICE_SPEC.MOVE = MOVE_DOWN;
@@ -500,11 +464,6 @@ static int slice_e(Cube* source, const unsigned int count, const int clockwise)
 
 static int slice_m(Cube* source, const unsigned int count, const int clockwise)
 {
-    if (!source)
-    {
-        return 1;
-    }
-
     MoveSpec M_SLICE_SPEC;
     M_SLICE_SPEC.MOVE = MOVE_LEFT;
     M_SLICE_SPEC.count = count;
@@ -526,10 +485,6 @@ static int slice_m(Cube* source, const unsigned int count, const int clockwise)
 
 static int rotate_about_axis(Cube* source, const Axis AXIS_OF_ROTATION, const unsigned int count, const int clockwise)
 {
-    if (!source)
-    {
-        return 1;
-    }
     MoveSpec MOVE_APPLIED_SPEC;
     MOVE_APPLIED_SPEC.count = count;
     MOVE_APPLIED_SPEC.clockwise = clockwise;

@@ -67,10 +67,6 @@ Colors getOppositeColor(const Colors COLOR)
 
 static int cycleFaces(Cubie* source, const Faces FACE1, const Faces FACE2, const Faces FACE3, const Faces FACE4, const int clockwise)
 {
-    if (!source)
-    {
-        return 1;
-    }
 
     if (FACE1 == FACES_NULL || FACE2 == FACES_NULL || FACE3 == FACES_NULL || FACE4 == FACES_NULL)
     {
@@ -98,10 +94,6 @@ static int cycleFaces(Cubie* source, const Faces FACE1, const Faces FACE2, const
 
 static int rotateZ(Cubie* source, const int clockwise)
 {
-    if (!source)
-    {
-        return 1;
-    }
 
     const Vec3* pos = getCubiePosition(source);
     if (!pos)
@@ -123,10 +115,6 @@ static int rotateZ(Cubie* source, const int clockwise)
 
 static int rotateY(Cubie* source, const int clockwise)
 {
-    if (!source)
-    {
-        return 1;
-    }
 
     const Vec3* pos = getCubiePosition(source);
     if (!pos)
@@ -147,10 +135,6 @@ static int rotateY(Cubie* source, const int clockwise)
 
 static int rotateX(Cubie* source, const int clockwise)
 {
-    if (!source)
-    {
-        return 1;
-    }
 
     const Vec3* pos = getCubiePosition(source);
     if (!pos)

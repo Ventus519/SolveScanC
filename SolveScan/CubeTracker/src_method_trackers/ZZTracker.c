@@ -113,6 +113,11 @@ int is_edge_orientation_complete(const ZZTracker* tracker)
     const Colors COLOR_F = get_face_center_color(TRACKED_CUBE, FACE_FRONT);
     const Colors COLOR_U = get_face_center_color(TRACKED_CUBE, FACE_UP);
 
+    if (COLOR_F == COLORS_NULL || COLOR_U == COLORS_NULL)
+    {
+        return 0;
+    }
+
     for (int x = -1; x < 2; x++)
     {
         for (int y = -1; y < 2; y++)
@@ -147,11 +152,20 @@ int is_cross_complete_ZZ(const ZZTracker* tracker)
     }
 
     const Colors CROSS_CENTER_COLOR = get_face_center_color(&tracker -> CUBE, FACE_DOWN);
+    if (CROSS_CENTER_COLOR == COLORS_NULL)
+    {
+        return 0;
+    }
 
     const Cubie* CROSS_EDGE_F = get_cubie_from_faces(&tracker -> CUBE, FACE_DOWN, FACE_FRONT, FACES_NULL);
     const Cubie* CROSS_EDGE_R = get_cubie_from_faces(&tracker -> CUBE, FACE_DOWN, FACES_NULL, FACE_RIGHT);
     const Cubie* CROSS_EDGE_B = get_cubie_from_faces(&tracker -> CUBE, FACE_DOWN, FACE_BACK, FACES_NULL);
     const Cubie* CROSS_EDGE_L = get_cubie_from_faces(&tracker -> CUBE, FACE_DOWN, FACES_NULL, FACE_LEFT);
+
+    if (!CROSS_EDGE_F || !CROSS_EDGE_R || !CROSS_EDGE_B || !CROSS_EDGE_L)
+    {
+        return 0;
+    }
 
     if (CROSS_EDGE_F -> FACE_COLORS[FACE_FRONT] != get_face_center_color(&tracker -> CUBE, FACE_FRONT))
     {
@@ -280,11 +294,20 @@ int is_ocll_complete(const ZZTracker* tracker)
         return 0;
     }
     const Colors COLOR_U = get_face_center_color(&tracker -> CUBE, FACE_UP);
+    if (COLOR_U == COLORS_NULL)
+    {
+        return 0;
+    }
 
     const Cubie* CORNER_UFR = get_cubie_from_faces(&tracker -> CUBE, FACE_UP, FACE_FRONT, FACE_RIGHT);
     const Cubie* CORNER_UBR = get_cubie_from_faces(&tracker -> CUBE, FACE_UP, FACE_BACK, FACE_RIGHT);
     const Cubie* CORNER_UBL = get_cubie_from_faces(&tracker -> CUBE, FACE_UP, FACE_BACK, FACE_LEFT);
     const Cubie* CORNER_UFL = get_cubie_from_faces(&tracker -> CUBE, FACE_UP, FACE_FRONT, FACE_LEFT);
+
+    if (!CORNER_UFR || !CORNER_UBR || !CORNER_UBL || !CORNER_UFL)
+    {
+        return 0;
+    }
 
     if (CORNER_UFR -> FACE_COLORS[FACE_UP] != COLOR_U || CORNER_UFL -> FACE_COLORS[FACE_UP] != COLOR_U)
     {
