@@ -29,12 +29,8 @@ void free_CFOPTracker(CFOPTracker* tracker)
     free(tracker);
 }
 
-int is_cross_complete_CFOP(const CFOPTracker* tracker)
+static int is_cross_complete_CFOP(const CFOPTracker* tracker)
 {
-    if (!tracker)
-    {
-        return 0;
-    }
     const Colors CROSS_CENTER_COLOR = get_face_center_color(&tracker -> CUBE, FACE_DOWN);
     if (CROSS_CENTER_COLOR == COLORS_NULL)
     {
@@ -88,12 +84,8 @@ int is_cross_complete_CFOP(const CFOPTracker* tracker)
     return 1;
 }
 
-int count_complete_f2l_pairs_CFOP(const CFOPTracker* tracker)
+static int count_complete_f2l_pairs_CFOP(const CFOPTracker* tracker)
 {
-    if (!tracker)
-    {
-        return 0;
-    }
     int count = 0;
     for (int i = 0; i < 4; i++)
     {
@@ -102,12 +94,8 @@ int count_complete_f2l_pairs_CFOP(const CFOPTracker* tracker)
     return count;
 }
 
-int is_f2l_pair_complete_CFOP(const CFOPTracker* tracker, const Faces FACE_FB, const Faces FACE_RL)
+static int is_f2l_pair_complete_CFOP(const CFOPTracker* tracker, const Faces FACE_FB, const Faces FACE_RL)
 {
-    if (!tracker)
-    {
-        return 0;
-    }
 
     const Cubie* F2L_CORNER = get_cubie_from_faces(&tracker -> CUBE, FACE_DOWN, FACE_FB, FACE_RL);
     const Cubie* NEARBY_CROSS_EDGE_RL = get_cubie_from_faces(&tracker -> CUBE, FACE_DOWN, FACES_NULL, FACE_RL);
@@ -144,12 +132,8 @@ int is_f2l_pair_complete_CFOP(const CFOPTracker* tracker, const Faces FACE_FB, c
     return 1;
 }
 
-int update_completed_f2l_pairs_CFOP(CFOPTracker* tracker)
+static int update_completed_f2l_pairs_CFOP(CFOPTracker* tracker)
 {
-    if (!tracker)
-    {
-        return 1;
-    }
     tracker -> f2l_pairs_completed = 0;
     if (is_f2l_pair_complete_CFOP(tracker, FACE_FRONT, FACE_LEFT))
     {
@@ -171,12 +155,8 @@ int update_completed_f2l_pairs_CFOP(CFOPTracker* tracker)
     return 0;
 }
 
-int is_oll_complete(const CFOPTracker* tracker)
+static int is_oll_complete(const CFOPTracker* tracker)
 {
-    if (!tracker)
-    {
-        return 0;
-    }
     const Colors U_FACE_CENTER_COLOR = get_face_center_color(&tracker -> CUBE, FACE_UP);
     if (U_FACE_CENTER_COLOR == COLORS_NULL)
     {
@@ -226,10 +206,8 @@ int update_current_step_CFOP(CFOPTracker* tracker, const int continue_scramble, 
     {
         tracker -> STEP = CFOP_F2L_1;
     }
-    if (update_completed_f2l_pairs_CFOP(tracker))
-    {
-        return 1;
-    }
+
+    (void) update_completed_f2l_pairs_CFOP(tracker);
     const int completed_pairs = count_complete_f2l_pairs_CFOP(tracker);
     if (CURRENT_STEP == CFOP_F2L_1 || completed_pairs == 0 && tracker -> STEP == CFOP_F2L_1)
     {

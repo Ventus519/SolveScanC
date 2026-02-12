@@ -1,4 +1,3 @@
-#pragma once
 #ifndef CUBE3_H
 #define CUBE3_H
 

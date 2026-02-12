@@ -42,18 +42,6 @@ typedef struct ZZ_TRACKER {
 int initialize_ZZTracker(ZZTracker* tracker); //all ZZ trackers are heap allocated
 void free_ZZTracker(ZZTracker* tracker);
 
-int is_edge_orientation_complete(const ZZTracker* tracker);
-
-int is_cross_complete_ZZ(const ZZTracker* tracker);
-
-int count_complete_f2l_pairs_ZZ(const ZZTracker* tracker);
-
-int is_f2l_pair_complete_ZZ(const ZZTracker* tracker, Faces FACE_FB, Faces FACE_RL);
-
-int update_completed_f2l_pairs_ZZ(ZZTracker* tracker);
-
-int is_ocll_complete(const ZZTracker* tracker);
-
 int update_current_step_ZZ(ZZTracker* tracker, int continue_scramble, int continue_inspect);
 
 

@@ -102,13 +102,8 @@ static int is_edge_oriented(const Cubie* EDGE, const Colors COLOR_U, const Color
 }
 
 
-int is_edge_orientation_complete(const ZZTracker* tracker)
+static int is_edge_orientation_complete(const ZZTracker* tracker)
 {
-    if (!tracker)
-    {
-        return 0;
-    }
-
     const Cube* TRACKED_CUBE = &tracker -> CUBE;
     const Colors COLOR_F = get_face_center_color(TRACKED_CUBE, FACE_FRONT);
     const Colors COLOR_U = get_face_center_color(TRACKED_CUBE, FACE_UP);
@@ -144,13 +139,8 @@ int is_edge_orientation_complete(const ZZTracker* tracker)
     return 1;
 }
 
-int is_cross_complete_ZZ(const ZZTracker* tracker)
+static int is_cross_complete_ZZ(const ZZTracker* tracker)
 {
-    if (!tracker)
-    {
-        return 0;
-    }
-
     const Colors CROSS_CENTER_COLOR = get_face_center_color(&tracker -> CUBE, FACE_DOWN);
     if (CROSS_CENTER_COLOR == COLORS_NULL)
     {
@@ -204,12 +194,8 @@ int is_cross_complete_ZZ(const ZZTracker* tracker)
     return 1;
 }
 
-int count_complete_f2l_pairs_ZZ(const ZZTracker* tracker)
+static int count_complete_f2l_pairs_ZZ(const ZZTracker* tracker)
 {
-    if (!tracker)
-    {
-        return 0;
-    }
     int count = 0;
     for (int i = 0; i < 4; i++)
     {
@@ -218,13 +204,8 @@ int count_complete_f2l_pairs_ZZ(const ZZTracker* tracker)
     return count;
 }
 
-int is_f2l_pair_complete_ZZ(const ZZTracker* tracker, const Faces FACE_FB, const Faces FACE_RL)
+static int is_f2l_pair_complete_ZZ(const ZZTracker* tracker, const Faces FACE_FB, const Faces FACE_RL)
 {
-    if (!tracker)
-    {
-        return 0;
-    }
-
     const Cubie* F2L_CORNER = get_cubie_from_faces(&tracker -> CUBE, FACE_DOWN, FACE_FB, FACE_RL);
     const Cubie* NEARBY_CROSS_EDGE_RL = get_cubie_from_faces(&tracker -> CUBE, FACE_DOWN, FACES_NULL, FACE_RL);
     const Cubie* NEARBY_CROSS_EDGE_FB = get_cubie_from_faces(&tracker -> CUBE, FACE_DOWN, FACE_FB, FACES_NULL);
@@ -260,12 +241,8 @@ int is_f2l_pair_complete_ZZ(const ZZTracker* tracker, const Faces FACE_FB, const
     return 1;
 }
 
-int update_completed_f2l_pairs_ZZ(ZZTracker* tracker)
+static int update_completed_f2l_pairs_ZZ(ZZTracker* tracker)
 {
-    if (!tracker)
-    {
-        return 1;
-    }
     tracker -> f2l_pairs_completed = 0;
     if (is_f2l_pair_complete_ZZ(tracker, FACE_FRONT, FACE_LEFT))
     {
@@ -287,12 +264,8 @@ int update_completed_f2l_pairs_ZZ(ZZTracker* tracker)
     return 0;
 }
 
-int is_ocll_complete(const ZZTracker* tracker)
+static int is_ocll_complete(const ZZTracker* tracker)
 {
-    if (!tracker)
-    {
-        return 0;
-    }
     const Colors COLOR_U = get_face_center_color(&tracker -> CUBE, FACE_UP);
     if (COLOR_U == COLORS_NULL)
     {
@@ -349,10 +322,8 @@ int update_current_step_ZZ(ZZTracker* tracker, const int continue_scramble, cons
     {
         tracker -> STEP = ZZ_F2L_1;
     }
-    if (update_completed_f2l_pairs_ZZ(tracker))
-    {
-        return 1;
-    }
+    (void) update_completed_f2l_pairs_ZZ(tracker);
+
     const int completed_pairs = count_complete_f2l_pairs_ZZ(tracker);
     if (!is_edge_orientation_complete(tracker) && (CURRENT_STEP < ZZ_OCLL) && (CURRENT_STEP > ZZ_INSPECT))
     {

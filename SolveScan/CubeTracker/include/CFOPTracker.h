@@ -43,14 +43,6 @@ typedef struct CFOP_TRACKER {
 int initialize_CFOPTracker(CFOPTracker* tracker);
 void free_CFOPTracker(CFOPTracker* tracker);
 
-//CFOP STEPS: CROSS, F2L, OLL, PLL
-int is_cross_complete_CFOP(const CFOPTracker* tracker);
-int count_complete_f2l_pairs_CFOP(const CFOPTracker* tracker);
-int is_f2l_pair_complete_CFOP(const CFOPTracker* tracker, Faces FACE_FB, Faces FACE_RL);
-int update_completed_f2l_pairs_CFOP(CFOPTracker* tracker);
-
-int is_oll_complete(const CFOPTracker* tracker);
-
 int update_current_step_CFOP(CFOPTracker* tracker, int continue_scramble, int continue_inspect);
 
 #endif //SOLVESCAN_CFOPTRACKER_H

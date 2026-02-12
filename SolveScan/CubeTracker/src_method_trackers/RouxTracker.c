@@ -5,8 +5,6 @@
 #include "RouxTracker.h"
 
 #include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
 
 
 
@@ -37,12 +35,8 @@ void free_RouxTracker(RouxTracker* tracker)
 
 
 
-int is_ROUX_block_complete(const RouxTracker* tracker, const Faces FACE_RL)
+static int is_ROUX_block_complete(const RouxTracker* tracker, const Faces FACE_RL)
 {
-    if (!tracker)
-    {
-        return 0;
-    }
     int x_buf; //since both FACE_LEFT and FACE_RIGHT lie on the x-axis
     switch (FACE_RL)
     {
@@ -109,22 +103,18 @@ int is_ROUX_block_complete(const RouxTracker* tracker, const Faces FACE_RL)
     return 1;
 }
 
-int is_first_block_complete(const RouxTracker* tracker)
+static int is_first_block_complete(const RouxTracker* tracker)
 {
     return (is_ROUX_block_complete(tracker, FACE_LEFT) || is_ROUX_block_complete(tracker, FACE_RIGHT));
 }
 
-int is_second_block_complete(const RouxTracker* tracker)
+static int is_second_block_complete(const RouxTracker* tracker)
 {
     return (is_ROUX_block_complete(tracker, FACE_LEFT) && is_ROUX_block_complete(tracker, FACE_RIGHT));
 }
 
-int last_layer_corners_aligned(const RouxTracker* tracker)
+static int last_layer_corners_aligned(const RouxTracker* tracker)
 {
-    if (!tracker)
-    {
-        return 0;
-    }
     const Cubie* R_BLOCK_BASE_EDGE = get_cubie_from_faces(&tracker->CUBE, FACE_DOWN, FACES_NULL, FACE_RIGHT);
     const Cubie* L_BLOCK_BASE_EDGE = get_cubie_from_faces(&tracker->CUBE, FACE_DOWN, FACES_NULL, FACE_LEFT);
     if (!R_BLOCK_BASE_EDGE || !L_BLOCK_BASE_EDGE)
@@ -228,38 +218,5 @@ int update_current_step_ROUX(RouxTracker* tracker, const int continue_scramble, 
 
 
 
-int track_applied_move_spec_roux(RouxTracker* tracker, MoveSpec* MOVE_TO_APPLY)
-{
-    if (!tracker || !MOVE_TO_APPLY)
-    {
-        return 1;
-    }
-    if (apply_move_from_spec(&tracker -> CUBE, MOVE_TO_APPLY))
-    {
-        return 1;
-    }
-
-    return 0;
-}
 
 
-void print_tracker_state(const RouxTracker* tracker)
-{
-    if (!tracker)
-    {
-        return;
-    }
-
-    printf("CURRENT STEP: ");
-    switch (tracker -> STEP)
-    {
-        case ROUX_SCRAMBLE: printf("SCRAMBLE\n"); break;
-        case ROUX_INSPECT: printf("INSPECT\n"); break;
-        case ROUX_FIRST_BLOCK: printf("FB\n"); break;
-        case ROUX_SECOND_BLOCK: printf("SB\n"); break;
-        case ROUX_LAST_LAYER_CORNERS: printf("CMLL\n"); break;
-        case ROUX_LAST_SIX_EDGES: printf("L6E\n"); break;
-        case ROUX_SOLVED: printf("SOLVED\n"); break;
-        case ROUX_MILESTONE_NULL: printf("NULL\n"); break;
-    }
-}
