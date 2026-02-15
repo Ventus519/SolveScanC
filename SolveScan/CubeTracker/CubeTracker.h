@@ -60,4 +60,6 @@ RouxMilestones get_current_ROUX_step(const CubeTracker* tracker);
 BeginnersMilestones get_current_BEGINNERS_step(const CubeTracker* tracker);
 ZZMilestones get_current_ZZ_step(const CubeTracker* tracker);
 
+int save_reconstruction_to_file(const CubeTracker* tracker);
+
 #endif //SOLVESCAN_CUBETRACKER_H

@@ -568,3 +568,23 @@ ZZMilestones get_current_ZZ_step(const CubeTracker* tracker)
     }
     return tracker -> tracker_ZZ -> STEP;
 }
+
+int save_reconstruction_to_file(const CubeTracker* tracker)
+{
+    if (is_invalid_CubeTracker(tracker))
+    {
+        return 1;
+    }
+
+    FILE* data_file = fopen(tracker -> save_file_path, "w");
+    if (!data_file)
+    {
+        return 1;
+    }
+
+    fprintf(data_file, "%s", tracker -> reconstruction);
+    fclose(data_file);
+
+
+    return 0;
+}

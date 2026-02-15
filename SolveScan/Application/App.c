@@ -10,7 +10,7 @@ static int WINDOW_WIDTH = 800;
 static int WINDOW_HEIGHT = 600;
 
 
-EnabledTrackers DEFAULT_ENABLED = ZZ;
+EnabledTrackers DEFAULT_ENABLED = ROUX;
 
 CubeTracker TRACKER;
 char* MOVES_DEFAULT = "R";
@@ -116,6 +116,7 @@ static void on_button_is_solved (gpointer user_data)
     if (is_subtracker_cube_solved(&TRACKER))
     {
         g_print("THE CUBE IS SOLVED\n");
+        save_reconstruction_to_file(&TRACKER);
     }
     else
     {
@@ -152,6 +153,15 @@ static void on_button_apply_moves_from_text (gpointer user_data)
     }
 
     free_MoveStack(APPLIED_MOVES);
+
+    if (is_subtracker_cube_solved(&TRACKER))
+    {
+        g_print("THE CUBE IS SOLVED\n");
+        if (save_reconstruction_to_file(&TRACKER))
+        {
+            g_print("FAILED TO WRITE RECONSTRUCTION TO: %s\n", TRACKER.save_file_path);
+        }
+    }
     //g_print("APPLIED MOVES: %s\n", moves_to_apply);
     //g_print("Current reconstruction: %s\n", TRACKER.reconstruction);
     gtk_text_buffer_set_text(GTK_TEXT_BUFFER (layout.textBuffer_reconstruction), TRACKER.reconstruction, -1);
